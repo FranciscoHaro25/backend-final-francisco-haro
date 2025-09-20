@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "iPhone 15",
+    "description": "Smartphone Apple último modelo",
+    "code": "IP15001",
+    "price": 999.99,
+    "status": true,
+    "stock": 10,
+    "category": "Electrónicos",
+    "thumbnails": []
+  }
+]
