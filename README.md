@@ -9,7 +9,7 @@ npm install
 npm start
 ```
 
-El servidor corre en `http://localhost:8080`
+El servidor corre en `http://localhost:3000`
 
 ## Estructura del Proyecto
 
@@ -83,13 +83,14 @@ Ejemplo carrito:
 - Los datos se persisten en archivos JSON
 - Se validan campos requeridos y códigos únicos
 - Separación en managers y rutas
+- Puerto actualizado a 3000 para evitar conflictos
 
 ## Uso
 
 Crear producto:
 
 ```bash
-curl -X POST http://localhost:8080/api/products \
+curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Smartphone",
@@ -104,11 +105,11 @@ curl -X POST http://localhost:8080/api/products \
 Crear carrito:
 
 ```bash
-curl -X POST http://localhost:8080/api/carts
+curl -X POST http://localhost:3000/api/carts
 ```
 
 Agregar al carrito:
 
 ```bash
-curl -X POST http://localhost:8080/api/carts/1/product/1
+curl -X POST http://localhost:3000/api/carts/1/product/1
 ```
