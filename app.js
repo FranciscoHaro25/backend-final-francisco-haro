@@ -3,7 +3,7 @@ const productsRouter = require("./routes/products");
 const cartsRouter = require("./routes/carts");
 
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,7 +24,7 @@ app.use((req, res) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Servidor funcionando en puerto ${PORT}`);
 });
 
 module.exports = app;
