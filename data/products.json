@@ -9,5 +9,16 @@
     "stock": 10,
     "category": "Electrónicos",
     "thumbnails": []
+  },
+  {
+    "id": 2,
+    "title": "Producto Test",
+    "description": "Test desde terminal",
+    "code": "TEST123",
+    "price": 50,
+    "status": true,
+    "stock": 15,
+    "category": "Test",
+    "thumbnails": []
   }
 ]

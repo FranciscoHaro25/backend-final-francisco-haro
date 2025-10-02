@@ -3,6 +3,9 @@
     <h1>Productos en Tiempo Real</h1>
     <p class="text-muted">Esta página se actualiza automáticamente usando
       WebSockets</p>
+    <div id="connectionStatus" class="alert alert-warning">
+      Conectando...
+    </div>
   </div>
 </div>
 
@@ -93,23 +96,32 @@
   // Conectar con el servidor de WebSockets const socket = io(); // Referencias
   a elementos const productForm = document.getElementById('productForm'); const
   productList = document.getElementById('productList'); const noProducts =
-  document.getElementById('noProducts'); // Eventos del socket
-  socket.on('connect', () => { console.log('Conectado al servidor'); });
-  socket.on('disconnect', () => { console.log('Desconectado del servidor'); });
-  // Recibir lista actualizada de productos socket.on('updateProducts',
-  (products) => { console.log('Productos actualizados:', products);
-  updateProductList(products); }); // Agregar producto
-  productForm.addEventListener('submit', (e) => { e.preventDefault(); const
-  productData = { title: document.getElementById('title').value, description:
+  document.getElementById('noProducts'); const connectionStatus =
+  document.getElementById('connectionStatus'); // Eventos del socket
+  socket.on('connect', () => { console.log('Conectado al servidor');
+  connectionStatus.className = 'alert alert-success';
+  connectionStatus.textContent = 'Conectado - WebSocket funcionando'; });
+  socket.on('disconnect', () => { console.log('Desconectado del servidor');
+  connectionStatus.className = 'alert alert-danger';
+  connectionStatus.textContent = 'Desconectado - Reintentando...'; }); //
+  Recibir lista actualizada de productos socket.on('updateProducts', (products)
+  => { console.log('Productos actualizados:', products);
+  updateProductList(products); }); // Manejar errores socket.on('error', (error)
+  => { console.error('Error:', error); alert('Error: ' + error.message); }); //
+  Agregar producto productForm.addEventListener('submit', (e) => {
+  e.preventDefault(); const productData = { title:
+  document.getElementById('title').value, description:
   document.getElementById('description').value, code:
   document.getElementById('code').value, price:
   parseFloat(document.getElementById('price').value), stock:
   parseInt(document.getElementById('stock').value), category:
-  document.getElementById('category').value }; socket.emit('newProduct',
-  productData); productForm.reset(); }); // Eliminar producto function
-  deleteProduct(id) { if (confirm('¿Estás seguro de eliminar este producto?')) {
+  document.getElementById('category').value }; console.log('Enviando producto:',
+  productData); socket.emit('newProduct', productData); productForm.reset(); });
+  // Eliminar producto function deleteProduct(id) { if (confirm('¿Estás seguro
+  de eliminar este producto?')) { console.log('Eliminando producto:', id);
   socket.emit('deleteProduct', id); } } // Actualizar la lista de productos
-  function updateProductList(products) { if (products.length === 0) {
+  function updateProductList(products) { console.log('Actualizando vista con',
+  products.length, 'productos'); if (products.length === 0) {
   productList.innerHTML = ''; noProducts.style.display = 'block'; return; }
   noProducts.style.display = 'none'; productList.innerHTML =
   products.map(product => ` <div class="col-md-6 col-lg-4 mb-3"
