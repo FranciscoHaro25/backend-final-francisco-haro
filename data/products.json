@@ -1,35 +1,24 @@
 [
   {
     "id": 1,
-    "title": "iPhone 15",
-    "description": "Smartphone Apple último modelo",
-    "code": "IP15001",
-    "price": 999.99,
+    "title": "Smartphone Galaxy",
+    "description": "Smartphone Android de última generación",
+    "code": "GAL-001",
+    "price": 899.99,
     "status": true,
-    "stock": 10,
+    "stock": 15,
     "category": "Electrónicos",
     "thumbnails": []
   },
   {
     "id": 2,
-    "title": "Producto Test",
-    "description": "Test desde terminal",
-    "code": "TEST123",
-    "price": 50,
-    "status": true,
-    "stock": 15,
-    "category": "Test",
-    "thumbnails": []
-  },
-  {
-    "id": 3,
-    "title": "TEST FINAL",
-    "description": "Prueba final WebSocket",
-    "code": "FINAL001",
+    "title": "Producto de Prueba WebSocket",
+    "description": "Prueba de funcionalidad en tiempo real",
+    "code": "TEST-WS-001",
     "price": 99.99,
     "status": true,
-    "stock": 1,
-    "category": "Test",
+    "stock": 10,
+    "category": "Pruebas",
     "thumbnails": []
   }
 ]
