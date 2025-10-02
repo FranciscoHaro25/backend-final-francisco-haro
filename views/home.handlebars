@@ -1,0 +1,32 @@
+<div class="row">
+    <div class="col-12">
+        <h1>Lista de Productos</h1>
+        <p class="lead">Todos los productos disponibles en la tienda</p>
+    </div>
+</div>
+
+<div class="row">
+    {{#each products}}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{this.title}}</h5>
+                <p class="card-text">{{this.description}}</p>
+                <p class="text-muted">Código: {{this.code}}</p>
+                <p class="fw-bold">${{this.price}}</p>
+                <p class="small">Stock: {{this.stock}} | Categoría: {{this.category}}</p>
+                <span class="badge {{#if this.status}}bg-success{{else}}bg-danger{{/if}}">
+                    {{#if this.status}}Disponible{{else}}No disponible{{/if}}
+                </span>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h4>No hay productos</h4>
+            <p>Aún no se han agregado productos a la tienda.</p>
+        </div>
+    </div>
+    {{/each}}
+</div>

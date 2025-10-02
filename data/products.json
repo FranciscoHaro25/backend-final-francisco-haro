@@ -20,5 +20,16 @@
     "stock": 15,
     "category": "Test",
     "thumbnails": []
+  },
+  {
+    "id": 3,
+    "title": "TEST FINAL",
+    "description": "Prueba final WebSocket",
+    "code": "FINAL001",
+    "price": 99.99,
+    "status": true,
+    "stock": 1,
+    "category": "Test",
+    "thumbnails": []
   }
 ]

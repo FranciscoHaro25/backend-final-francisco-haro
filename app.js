@@ -70,6 +70,18 @@ app.get("/", async (req, res) => {
   }
 });
 
+// Ruta HOME según consigna de Coderhouse - lista de productos
+app.get("/home", async (req, res) => {
+  try {
+    const products = await productManager.getProducts();
+    res.render("home", {
+      title: "Lista de Productos",
+      products: products,
+    });
+  } catch (error) {
+    res.status(500).render("error", { error: "Error al cargar productos" });
+  }
+});
 app.get("/products", async (req, res) => {
   try {
     const filters = {
@@ -136,21 +148,28 @@ app.use((req, res) => {
 
 // Configuración básica de Socket.io
 io.on("connection", (socket) => {
-  console.log("Usuario conectado:", socket.id);
+  console.log("🔌 Usuario conectado:", socket.id);
+  console.log("👥 Total clientes conectados:", io.sockets.sockets.size);
+
+  // Enviar productos existentes al cliente recién conectado
+  productManager.getProducts().then((products) => {
+    socket.emit("updateProducts", products);
+    console.log("📤 Productos enviados al cliente:", products.length);
+  });
 
   // Evento para agregar producto
   socket.on("newProduct", async (productData) => {
     try {
-      console.log("Recibido newProduct:", productData);
+      console.log("📦 Recibido newProduct:", productData);
       const newProduct = await productManager.addProduct(productData);
       const products = await productManager.getProducts();
 
       // Enviar lista actualizada a todos los clientes
       io.emit("updateProducts", products);
-      console.log("Producto agregado:", newProduct.title);
-      console.log("Total productos enviados:", products.length);
+      console.log("✅ Producto agregado:", newProduct.title);
+      console.log("📊 Total productos enviados:", products.length);
     } catch (error) {
-      console.log("Error al agregar producto:", error.message);
+      console.log("❌ Error al agregar producto:", error.message);
       socket.emit("error", { message: error.message });
     }
   });
@@ -158,24 +177,27 @@ io.on("connection", (socket) => {
   // Evento para eliminar producto
   socket.on("deleteProduct", async (productId) => {
     try {
-      console.log("Recibido deleteProduct:", productId);
+      console.log("🗑️ Recibido deleteProduct:", productId);
       await productManager.deleteProduct(productId);
       const products = await productManager.getProducts();
 
       // Enviar lista actualizada a todos los clientes
       io.emit("updateProducts", products);
-      console.log("Producto eliminado, ID:", productId);
-      console.log("Total productos enviados:", products.length);
+      console.log("✅ Producto eliminado, ID:", productId);
+      console.log("📊 Total productos enviados:", products.length);
     } catch (error) {
-      console.log("Error al eliminar producto:", error.message);
+      console.log("❌ Error al eliminar producto:", error.message);
       socket.emit("error", { message: error.message });
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("Usuario desconectado:", socket.id);
+    console.log("🔌 Usuario desconectado:", socket.id);
+    console.log("👥 Total clientes conectados:", io.sockets.sockets.size);
   });
-}); // Hacer que io esté disponible en las rutas
+});
+
+// Hacer que io esté disponible en las rutas
 app.set("io", io);
 
 // Iniciar servidor
