@@ -1,5 +1,6 @@
 const express = require("express");
 const CartManager = require("../managers/CartManager");
+const auth = require("../middlewares/auth");
 
 const router = express.Router();
 const cartManager = new CartManager();
@@ -40,6 +41,36 @@ router.post("/:cid/product/:pid", async (req, res) => {
     if (error.message === "Carrito no encontrado") {
       return res.status(404).json({ error: error.message });
     }
+    res
+      .status(500)
+      .json({ error: "Error del servidor", message: error.message });
+  }
+});
+
+// Endpoint para obtener todos los carritos
+router.get("/", async (req, res) => {
+  try {
+    const carts = await cartManager.getCarts();
+    res.json(carts);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error del servidor", message: error.message });
+  }
+});
+
+// Estadísticas de carritos
+router.get("/stats/general", async (req, res) => {
+  try {
+    const carts = await cartManager.getCarts();
+    const stats = {
+      total: carts.length,
+      withProducts: carts.filter((c) => c.products.length > 0).length,
+      empty: carts.filter((c) => c.products.length === 0).length,
+      totalProducts: carts.reduce((sum, c) => sum + c.products.length, 0),
+    };
+    res.json(stats);
+  } catch (error) {
     res
       .status(500)
       .json({ error: "Error del servidor", message: error.message });

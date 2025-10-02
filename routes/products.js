@@ -1,12 +1,26 @@
 const express = require("express");
 const ProductManager = require("../managers/ProductManager");
+const auth = require("../middlewares/auth");
 
 const router = express.Router();
 const productManager = new ProductManager();
 
 router.get("/", async (req, res) => {
   try {
-    const products = await productManager.getProducts();
+    // Obtener query parameters
+    const filters = {
+      category: req.query.category,
+      minPrice: req.query.minPrice,
+      maxPrice: req.query.maxPrice,
+      stock: req.query.stock,
+      search: req.query.search,
+      sortBy: req.query.sortBy,
+      order: req.query.order,
+      limit: req.query.limit,
+      page: req.query.page,
+    };
+
+    const products = await productManager.getProducts(filters);
     res.json(products);
   } catch (error) {
     res
@@ -66,7 +80,7 @@ router.put("/:pid", async (req, res) => {
   }
 });
 
-router.delete("/:pid", async (req, res) => {
+router.delete("/:pid", auth, async (req, res) => {
   try {
     const deletedProduct = await productManager.deleteProduct(req.params.pid);
     res.json({ message: "Producto eliminado", product: deletedProduct });
@@ -74,6 +88,43 @@ router.delete("/:pid", async (req, res) => {
     if (error.message === "Producto no encontrado") {
       return res.status(404).json({ error: error.message });
     }
+    res
+      .status(500)
+      .json({ error: "Error del servidor", message: error.message });
+  }
+});
+
+// Endpoints extras para filtros
+router.get("/category/:category", async (req, res) => {
+  try {
+    const products = await productManager.getProducts({
+      category: req.params.category,
+    });
+    res.json(products);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error del servidor", message: error.message });
+  }
+});
+
+router.get("/stats/general", async (req, res) => {
+  try {
+    const products = await productManager.getProducts();
+    const stats = {
+      total: products.length,
+      categories: [...new Set(products.map((p) => p.category))],
+      averagePrice:
+        products.length > 0
+          ? (
+              products.reduce((sum, p) => sum + p.price, 0) / products.length
+            ).toFixed(2)
+          : 0,
+      inStock: products.filter((p) => p.stock > 0).length,
+      outOfStock: products.filter((p) => p.stock === 0).length,
+    };
+    res.json(stats);
+  } catch (error) {
     res
       .status(500)
       .json({ error: "Error del servidor", message: error.message });

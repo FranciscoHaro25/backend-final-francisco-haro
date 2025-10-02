@@ -22,8 +22,62 @@ class ProductManager {
     await fs.writeFile(this.path, JSON.stringify(products, null, 2));
   }
 
-  async getProducts() {
-    return await this.readProducts();
+  async getProducts(filters = {}) {
+    let products = await this.readProducts();
+
+    // Filtros simples
+    if (filters.category) {
+      products = products.filter((p) =>
+        p.category.toLowerCase().includes(filters.category.toLowerCase())
+      );
+    }
+
+    if (filters.minPrice) {
+      products = products.filter(
+        (p) => p.price >= parseFloat(filters.minPrice)
+      );
+    }
+
+    if (filters.maxPrice) {
+      products = products.filter(
+        (p) => p.price <= parseFloat(filters.maxPrice)
+      );
+    }
+
+    if (filters.stock) {
+      if (filters.stock === "true") {
+        products = products.filter((p) => p.stock > 0);
+      }
+    }
+
+    if (filters.search) {
+      products = products.filter(
+        (p) =>
+          p.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+          p.description.toLowerCase().includes(filters.search.toLowerCase())
+      );
+    }
+
+    // Ordenamiento básico
+    if (filters.sortBy) {
+      products.sort((a, b) => {
+        if (filters.order === "desc") {
+          return b[filters.sortBy] > a[filters.sortBy] ? 1 : -1;
+        } else {
+          return a[filters.sortBy] > b[filters.sortBy] ? 1 : -1;
+        }
+      });
+    }
+
+    // Paginación simple
+    if (filters.limit) {
+      const limit = parseInt(filters.limit);
+      const page = parseInt(filters.page) || 1;
+      const start = (page - 1) * limit;
+      products = products.slice(start, start + limit);
+    }
+
+    return products;
   }
 
   async getProductById(id) {

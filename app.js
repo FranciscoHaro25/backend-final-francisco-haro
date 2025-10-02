@@ -42,10 +42,24 @@ app.get("/", async (req, res) => {
     const products = await productManager.getProducts();
     const carts = await cartManager.getCarts();
 
+    // Estadísticas básicas
+    const stats = {
+      products: {
+        total: products.length,
+        inStock: products.filter((p) => p.stock > 0).length,
+        categories: [...new Set(products.map((p) => p.category))],
+      },
+      carts: {
+        total: carts.length,
+        withProducts: carts.filter((c) => c.products.length > 0).length,
+      },
+    };
+
     res.render("home", {
       title: "Mi Tienda - Inicio",
       productCount: products.length,
       cartCount: carts.length,
+      stats: stats,
     });
   } catch (error) {
     res.status(500).render("error", { error: "Error del servidor" });
@@ -54,10 +68,22 @@ app.get("/", async (req, res) => {
 
 app.get("/products", async (req, res) => {
   try {
-    const products = await productManager.getProducts();
+    const filters = {
+      search: req.query.search,
+      category: req.query.category,
+      minPrice: req.query.minPrice,
+      maxPrice: req.query.maxPrice,
+      limit: req.query.limit || 20,
+    };
+
+    const products = await productManager.getProducts(filters);
     res.render("products", {
       title: "Productos",
       products: products,
+      search: req.query.search,
+      category: req.query.category,
+      minPrice: req.query.minPrice,
+      maxPrice: req.query.maxPrice,
     });
   } catch (error) {
     res.status(500).render("error", { error: "Error al cargar productos" });

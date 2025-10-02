@@ -11,7 +11,17 @@
       <div class="card-body">
         <h5 class="card-title">Productos</h5>
         <p class="card-text">Total: {{productCount}} productos</p>
-        <a href="/products" class="btn btn-primary">Ver productos</a>
+        {{#if stats.products}}
+          <small class="text-muted">
+            En stock:
+            {{stats.products.inStock}}
+            | Categorías:
+            {{stats.products.categories.length}}
+          </small>
+        {{/if}}
+        <div class="mt-2">
+          <a href="/products" class="btn btn-primary">Ver productos</a>
+        </div>
       </div>
     </div>
   </div>
@@ -21,7 +31,15 @@
       <div class="card-body">
         <h5 class="card-title">Carritos</h5>
         <p class="card-text">Total: {{cartCount}} carritos</p>
-        <a href="/carts" class="btn btn-success">Ver carritos</a>
+        {{#if stats.carts}}
+          <small class="text-muted">
+            Con productos:
+            {{stats.carts.withProducts}}
+          </small>
+        {{/if}}
+        <div class="mt-2">
+          <a href="/carts" class="btn btn-success">Ver carritos</a>
+        </div>
       </div>
     </div>
   </div>
@@ -31,8 +49,33 @@
       <div class="card-body">
         <h5 class="card-title">API</h5>
         <p class="card-text">Documentación de endpoints</p>
-        <a href="/api/products" class="btn btn-info">Ver API</a>
+        <small class="text-muted">
+          Probá los endpoints con query params
+        </small>
+        <div class="mt-2">
+          <a href="/api/products" class="btn btn-info">Ver API</a>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+{{#if stats.products.categories}}
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5>Categorías disponibles:</h5>
+          <div class="d-flex flex-wrap gap-2">
+            {{#each stats.products.categories}}
+              <a
+                href="/products?category={{this}}"
+                class="badge bg-secondary text-decoration-none"
+              >{{this}}</a>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/if}}

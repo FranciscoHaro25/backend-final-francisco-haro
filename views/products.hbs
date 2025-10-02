@@ -3,6 +3,62 @@
   <a href="/products/new" class="btn btn-primary">Agregar Producto</a>
 </div>
 
+<!-- Filtros simples -->
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>Filtros</h5>
+    <form method="GET" action="/products">
+      <div class="row">
+        <div class="col-md-3">
+          <label>Buscar:</label>
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Nombre o descripción"
+            value="{{search}}"
+          />
+        </div>
+        <div class="col-md-3">
+          <label>Categoría:</label>
+          <input
+            type="text"
+            name="category"
+            class="form-control"
+            placeholder="Ej: Electrónicos"
+            value="{{category}}"
+          />
+        </div>
+        <div class="col-md-2">
+          <label>Precio mín:</label>
+          <input
+            type="number"
+            name="minPrice"
+            class="form-control"
+            value="{{minPrice}}"
+          />
+        </div>
+        <div class="col-md-2">
+          <label>Precio máx:</label>
+          <input
+            type="number"
+            name="maxPrice"
+            class="form-control"
+            value="{{maxPrice}}"
+          />
+        </div>
+        <div class="col-md-2">
+          <label>&nbsp;</label>
+          <button
+            type="submit"
+            class="btn btn-secondary d-block"
+          >Filtrar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 {{#if products.length}}
   <div class="row">
     {{#each products}}
@@ -35,6 +91,6 @@
 {{else}}
   <div class="alert alert-info">
     <h4>No hay productos</h4>
-    <p>Comienza agregando tu primer producto.</p>
+    <p>No se encontraron productos con los filtros aplicados.</p>
   </div>
 {{/if}}
