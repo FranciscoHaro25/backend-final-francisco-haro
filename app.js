@@ -152,22 +152,44 @@ io.on("connection", (socket) => {
   console.log("👥 Total clientes conectados:", io.sockets.sockets.size);
 
   // Enviar productos existentes al cliente recién conectado
-  productManager.getProducts().then((products) => {
-    socket.emit("updateProducts", products);
-    console.log("📤 Productos enviados al cliente:", products.length);
-  });
+  productManager
+    .getProducts()
+    .then((products) => {
+      socket.emit("updateProducts", products);
+      console.log(
+        "📤 Productos enviados al cliente recién conectado:",
+        products.length
+      );
+    })
+    .catch((error) => {
+      console.log("❌ Error al enviar productos iniciales:", error.message);
+    });
 
   // Evento para agregar producto
   socket.on("newProduct", async (productData) => {
     try {
-      console.log("📦 Recibido newProduct:", productData);
+      console.log("📦 Recibido newProduct desde WebSocket:", productData);
+
+      // Validar datos
+      if (!productData.title || !productData.code) {
+        throw new Error("Título y código son requeridos");
+      }
+
       const newProduct = await productManager.addProduct(productData);
       const products = await productManager.getProducts();
 
-      // Enviar lista actualizada a todos los clientes
+      // Enviar lista actualizada a todos los clientes conectados
       io.emit("updateProducts", products);
-      console.log("✅ Producto agregado:", newProduct.title);
-      console.log("📊 Total productos enviados:", products.length);
+      console.log("✅ Producto agregado via WebSocket:", newProduct.title);
+      console.log(
+        "📊 Total productos enviados a",
+        io.sockets.sockets.size,
+        "clientes:",
+        products.length
+      );
+
+      // Confirmar al cliente que envió
+      socket.emit("productAdded", { success: true, product: newProduct });
     } catch (error) {
       console.log("❌ Error al agregar producto:", error.message);
       socket.emit("error", { message: error.message });
@@ -177,14 +199,22 @@ io.on("connection", (socket) => {
   // Evento para eliminar producto
   socket.on("deleteProduct", async (productId) => {
     try {
-      console.log("🗑️ Recibido deleteProduct:", productId);
-      await productManager.deleteProduct(productId);
+      console.log("🗑️ Recibido deleteProduct desde WebSocket:", productId);
+      const deletedProduct = await productManager.deleteProduct(productId);
       const products = await productManager.getProducts();
 
-      // Enviar lista actualizada a todos los clientes
+      // Enviar lista actualizada a todos los clientes conectados
       io.emit("updateProducts", products);
-      console.log("✅ Producto eliminado, ID:", productId);
-      console.log("📊 Total productos enviados:", products.length);
+      console.log("✅ Producto eliminado via WebSocket, ID:", productId);
+      console.log(
+        "📊 Total productos enviados a",
+        io.sockets.sockets.size,
+        "clientes:",
+        products.length
+      );
+
+      // Confirmar al cliente que envió
+      socket.emit("productDeleted", { success: true, productId: productId });
     } catch (error) {
       console.log("❌ Error al eliminar producto:", error.message);
       socket.emit("error", { message: error.message });
@@ -194,6 +224,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("🔌 Usuario desconectado:", socket.id);
     console.log("👥 Total clientes conectados:", io.sockets.sockets.size);
+  });
+
+  socket.on("error", (error) => {
+    console.log("❌ Error de socket:", error);
   });
 });
 

@@ -75,7 +75,7 @@
             class="btn btn-danger btn-sm"
             onclick="deleteProduct({{this.id}})"
           >
-            Eliminar
+            🗑️ Eliminar
           </button>
         </div>
       </div>
@@ -93,49 +93,64 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  console.log('Inicializando WebSocket...'); // Conectar con el servidor de
-  WebSockets const socket = io(); // Referencias a elementos const productForm =
+  console.log('🚀 Inicializando WebSocket...'); // Conectar con el servidor de
+  WebSockets const socket = io({ transports: ['websocket', 'polling'] }); //
+  Referencias a elementos const productForm =
   document.getElementById('productForm'); const productList =
   document.getElementById('productList'); const noProducts =
   document.getElementById('noProducts'); const connectionStatus =
   document.getElementById('connectionStatus'); // Eventos del socket
-  socket.on('connect', () => { console.log('✅ Conectado al servidor
-  WebSocket'); connectionStatus.className = 'alert alert-success';
-  connectionStatus.textContent = 'Conectado - WebSocket funcionando'; });
+  socket.on('connect', () => { console.log('✅ Conectado al servidor WebSocket -
+  ID:', socket.id); connectionStatus.className = 'alert alert-success';
+  connectionStatus.textContent = '✅ Conectado - WebSocket funcionando'; });
   socket.on('disconnect', () => { console.log('❌ Desconectado del servidor');
   connectionStatus.className = 'alert alert-danger';
-  connectionStatus.textContent = 'Desconectado - Reintentando...'; });
-  socket.on('connect_error', (error) => { console.error('Error de conexión:',
+  connectionStatus.textContent = '❌ Desconectado - Reintentando...'; });
+  socket.on('connect_error', (error) => { console.error('💥 Error de conexión:',
   error); connectionStatus.className = 'alert alert-danger';
-  connectionStatus.textContent = 'Error de conexión WebSocket'; }); // Recibir
-  lista actualizada de productos socket.on('updateProducts', (products) => {
-  console.log('📦 Productos actualizados:', products);
-  updateProductList(products); }); // Manejar errores socket.on('error', (error)
-  => { console.error('Error:', error); alert('Error: ' + error.message); }); //
-  Agregar producto if (productForm) { productForm.addEventListener('submit', (e)
-  => { e.preventDefault(); const productData = { title:
-  document.getElementById('title').value, description:
-  document.getElementById('description').value, code:
-  document.getElementById('code').value, price:
+  connectionStatus.textContent = '💥 Error de conexión WebSocket'; }); //
+  Recibir lista actualizada de productos socket.on('updateProducts', (products)
+  => { console.log('📦 Productos actualizados vía WebSocket:', products.length,
+  'productos'); updateProductList(products); }); // Confirmación de producto
+  agregado socket.on('productAdded', (data) => { console.log('✅ Confirmación:
+  Producto agregado exitosamente', data.product); }); // Confirmación de
+  producto eliminado socket.on('productDeleted', (data) => { console.log('✅
+  Confirmación: Producto eliminado exitosamente, ID:', data.productId); }); //
+  Manejar errores socket.on('error', (error) => { console.error('❌ Error del
+  servidor:', error); alert('Error del servidor: ' + error.message); }); //
+  Agregar producto via formulario WebSocket if (productForm) {
+  productForm.addEventListener('submit', (e) => { e.preventDefault(); const
+  productData = { title: document.getElementById('title').value.trim(),
+  description: document.getElementById('description').value.trim(), code:
+  document.getElementById('code').value.trim(), price:
   parseFloat(document.getElementById('price').value), stock:
   parseInt(document.getElementById('stock').value), category:
-  document.getElementById('category').value }; console.log('🚀 Enviando
-  producto:', productData); socket.emit('newProduct', productData);
-  productForm.reset(); }); } // Eliminar producto function deleteProduct(id) {
-  if (confirm('¿Estás seguro de eliminar este producto?')) { console.log('🗑️
-  Eliminando producto:', id); socket.emit('deleteProduct', id); } } //
-  Actualizar la lista de productos function updateProductList(products) {
-  console.log('🔄 Actualizando vista con', products.length, 'productos'); if
-  (products.length === 0) { productList.innerHTML = ''; noProducts.style.display
-  = 'block'; return; } noProducts.style.display = 'none'; productList.innerHTML
-  = products.map(product => ` <div class="col-md-6 col-lg-4 mb-3"
-  data-product-id="${product.id}"> <div class="card"> <div class="card-body">
-  <h5 class="card-title">${product.title}</h5> <p
+  document.getElementById('category').value.trim() }; // Validaciones básicas if
+  (!productData.title || !productData.description || !productData.code) {
+  alert('Por favor completa todos los campos requeridos'); return; } if
+  (isNaN(productData.price) || productData.price <= 0) { alert('El precio debe
+  ser un número mayor a 0'); return; } if (isNaN(productData.stock) ||
+  productData.stock < 0) { alert('El stock debe ser un número mayor o igual a
+  0'); return; } console.log('🚀 Enviando nuevo producto vía WebSocket:',
+  productData); socket.emit('newProduct', productData); // Limpiar formulario
+  productForm.reset(); }); } // Eliminar producto via WebSocket function
+  deleteProduct(id) { if (confirm('¿Estás seguro de eliminar este producto?')) {
+  console.log('🗑️ Eliminando producto ID vía WebSocket:', id);
+  socket.emit('deleteProduct', parseInt(id)); } } // Actualizar la lista de
+  productos en tiempo real function updateProductList(products) {
+  console.log('🔄 Actualizando vista DOM con', products.length, 'productos'); if
+  (!products || products.length === 0) { productList.innerHTML = '';
+  noProducts.style.display = 'block'; return; } noProducts.style.display =
+  'none'; const productsHTML = products.map(product => ` <div class="col-md-6
+  col-lg-4 mb-3" data-product-id="${product.id}"> <div class="card"> <div
+  class="card-body"> <h5 class="card-title">${product.title}</h5> <p
   class="card-text">${product.description}</p> <p class="text-muted">Código:
   ${product.code}</p> <p class="fw-bold">$${product.price}</p> <p
   class="small">Stock: ${product.stock} | Categoría: ${product.category}</p>
   <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})">
-  Eliminar </button> </div> </div> </div> `).join(''); } // Hacer disponible
-  globalmente window.deleteProduct = deleteProduct; console.log('Script
-  WebSocket cargado correctamente');
+  🗑️ Eliminar </button> </div> </div> </div> `).join(''); productList.innerHTML
+  = productsHTML; console.log('✅ Lista de productos actualizada en el DOM
+  exitosamente'); } // Hacer disponible globalmente window.deleteProduct =
+  deleteProduct; console.log('📝 Script WebSocket cargado y configurado
+  correctamente');
 </script>
