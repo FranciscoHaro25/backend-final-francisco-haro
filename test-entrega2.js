@@ -8,13 +8,12 @@ const socket = io("http://localhost:3000");
 socket.on("connect", () => {
   console.log("✅ WebSocket conectado exitosamente");
 
-  // Probar agregar producto
   setTimeout(() => {
     console.log("🚀 Agregando producto de prueba...");
     const testProduct = {
       title: "Producto de Prueba WebSocket",
       description: "Prueba de funcionalidad en tiempo real",
-      code: "TEST-WS-001",
+      code: "TEST-WS-" + Date.now(),
       price: 99.99,
       stock: 10,
       category: "Pruebas",
@@ -42,7 +41,6 @@ socket.on("disconnect", () => {
   console.log("🔌 Desconectado");
 });
 
-// Cerrar después de 5 segundos
 setTimeout(() => {
   console.log("\n🎉 PRUEBA COMPLETADA");
   console.log("✅ WebSocket funcionando correctamente");
