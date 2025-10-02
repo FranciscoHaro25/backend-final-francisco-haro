@@ -1,5 +1,7 @@
 const express = require("express");
 const { engine } = require("express-handlebars");
+const { Server } = require("socket.io");
+const http = require("http");
 const path = require("path");
 const productsRouter = require("./routes/products");
 const cartsRouter = require("./routes/carts");
@@ -9,6 +11,8 @@ const ProductManager = require("./managers/ProductManager");
 const CartManager = require("./managers/CartManager");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = 3000;
 
 // Configurar Handlebars
@@ -102,6 +106,18 @@ app.get("/carts", async (req, res) => {
   }
 });
 
+app.get("/realtimeproducts", async (req, res) => {
+  try {
+    const products = await productManager.getProducts();
+    res.render("realTimeProducts", {
+      title: "Productos en Tiempo Real",
+      products: products,
+    });
+  } catch (error) {
+    res.status(500).render("error", { error: "Error al cargar productos" });
+  }
+});
+
 // Ruta de API básica
 app.get("/api", (req, res) => {
   res.json({
@@ -118,10 +134,51 @@ app.use((req, res) => {
   res.status(404).json({ error: "Ruta no encontrada" });
 });
 
+// Configuración básica de Socket.io
+io.on("connection", (socket) => {
+  console.log("Usuario conectado:", socket.id);
+
+  // Evento para agregar producto
+  socket.on("newProduct", async (productData) => {
+    try {
+      const newProduct = await productManager.addProduct(productData);
+      const products = await productManager.getProducts();
+
+      // Enviar lista actualizada a todos los clientes
+      io.emit("updateProducts", products);
+      console.log("Producto agregado:", newProduct.title);
+    } catch (error) {
+      socket.emit("error", { message: error.message });
+    }
+  });
+
+  // Evento para eliminar producto
+  socket.on("deleteProduct", async (productId) => {
+    try {
+      await productManager.deleteProduct(productId);
+      const products = await productManager.getProducts();
+
+      // Enviar lista actualizada a todos los clientes
+      io.emit("updateProducts", products);
+      console.log("Producto eliminado, ID:", productId);
+    } catch (error) {
+      socket.emit("error", { message: error.message });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Usuario desconectado:", socket.id);
+  });
+});
+
+// Hacer que io esté disponible en las rutas
+app.set("io", io);
+
 // Iniciar servidor
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Servidor funcionando en puerto ${PORT}`);
   console.log(`Visita: http://localhost:${PORT}`);
+  console.log("WebSockets habilitados");
 });
 
 module.exports = app;
