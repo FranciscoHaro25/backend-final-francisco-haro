@@ -141,13 +141,16 @@ io.on("connection", (socket) => {
   // Evento para agregar producto
   socket.on("newProduct", async (productData) => {
     try {
+      console.log("Recibido newProduct:", productData);
       const newProduct = await productManager.addProduct(productData);
       const products = await productManager.getProducts();
 
       // Enviar lista actualizada a todos los clientes
       io.emit("updateProducts", products);
       console.log("Producto agregado:", newProduct.title);
+      console.log("Total productos enviados:", products.length);
     } catch (error) {
+      console.log("Error al agregar producto:", error.message);
       socket.emit("error", { message: error.message });
     }
   });
@@ -155,13 +158,16 @@ io.on("connection", (socket) => {
   // Evento para eliminar producto
   socket.on("deleteProduct", async (productId) => {
     try {
+      console.log("Recibido deleteProduct:", productId);
       await productManager.deleteProduct(productId);
       const products = await productManager.getProducts();
 
       // Enviar lista actualizada a todos los clientes
       io.emit("updateProducts", products);
       console.log("Producto eliminado, ID:", productId);
+      console.log("Total productos enviados:", products.length);
     } catch (error) {
+      console.log("Error al eliminar producto:", error.message);
       socket.emit("error", { message: error.message });
     }
   });
@@ -169,9 +175,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Usuario desconectado:", socket.id);
   });
-});
-
-// Hacer que io esté disponible en las rutas
+}); // Hacer que io esté disponible en las rutas
 app.set("io", io);
 
 // Iniciar servidor
