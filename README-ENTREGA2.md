@@ -1,4 +1,4 @@
-# ENTREGA 2 - WebSockets y Tiempo Real 🚀
+![alt text](image.png)# ENTREGA 2 - WebSockets y Tiempo Real 🚀
 
 ## 📋 Consigna Implementada
 

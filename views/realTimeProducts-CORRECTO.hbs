@@ -1,0 +1,172 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productos en Tiempo Real</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">Mi Tienda</a>
+        <div>
+          <a href="/" class="btn btn-outline-light btn-sm me-2">Inicio</a>
+          <a
+            href="/products"
+            class="btn btn-outline-light btn-sm me-2"
+          >Productos</a>
+          <a href="/realtimeproducts" class="btn btn-light btn-sm me-2">Tiempo
+            Real</a>
+          <a href="/carts" class="btn btn-outline-light btn-sm">Carritos</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <h1>Productos en Tiempo Real</h1>
+      <p class="text-muted">WebSocket activo - actualizaciones automáticas</p>
+
+      <div id="status" class="alert alert-warning">Conectando...</div>
+
+      <!-- Formulario -->
+      <div class="card mb-4">
+        <div class="card-header">Agregar Producto</div>
+        <div class="card-body">
+          <form id="productForm">
+            <div class="row">
+              <div class="col-md-6">
+                <input
+                  type="text"
+                  id="title"
+                  class="form-control mb-2"
+                  placeholder="Título"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <input
+                  type="text"
+                  id="description"
+                  class="form-control mb-2"
+                  placeholder="Descripción"
+                  required
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  id="code"
+                  class="form-control mb-2"
+                  placeholder="Código"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="number"
+                  id="price"
+                  class="form-control mb-2"
+                  placeholder="Precio"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="number"
+                  id="stock"
+                  class="form-control mb-2"
+                  placeholder="Stock"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  id="category"
+                  class="form-control mb-2"
+                  placeholder="Categoría"
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista de productos -->
+      <div id="productList" class="row">
+        {{#each products}}
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5>{{this.title}}</h5>
+                <p>{{this.description}}</p>
+                <p><strong>${{this.price}}</strong></p>
+                <p>Stock: {{this.stock}} | {{this.category}}</p>
+                <button
+                  class="btn btn-danger btn-sm"
+                  onclick="eliminar({{this.id}})"
+                >Eliminar</button>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+
+      <div id="noProducts" style="display: none;">
+        <div class="alert alert-info">No hay productos</div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      console.log('Iniciando WebSocket...'); const socket = io(); const form =
+      document.getElementById('productForm'); const lista =
+      document.getElementById('productList'); const vacio =
+      document.getElementById('noProducts'); const estado =
+      document.getElementById('status'); socket.on('connect', function() {
+      console.log('✅ WebSocket conectado'); estado.className = 'alert
+      alert-success'; estado.textContent = 'Conectado ✓'; });
+      socket.on('disconnect', function() { console.log('❌ WebSocket
+      desconectado'); estado.className = 'alert alert-danger';
+      estado.textContent = 'Desconectado ✗'; }); socket.on('connect_error',
+      function(error) { console.error('Error de conexión:', error);
+      estado.className = 'alert alert-danger'; estado.textContent = 'Error de
+      conexión'; }); socket.on('updateProducts', function(productos) {
+      console.log('📦 Productos actualizados:', productos.length);
+      mostrarProductos(productos); }); socket.on('error', function(error) {
+      console.error('⚠️ Error WebSocket:', error); alert('Error: ' +
+      error.message); }); if (form) { form.addEventListener('submit',
+      function(e) { e.preventDefault(); const nuevoProducto = { title:
+      document.getElementById('title').value, description:
+      document.getElementById('description').value, code:
+      document.getElementById('code').value, price:
+      parseFloat(document.getElementById('price').value), stock:
+      parseInt(document.getElementById('stock').value), category:
+      document.getElementById('category').value }; console.log('🚀 Enviando
+      producto:', nuevoProducto); socket.emit('newProduct', nuevoProducto);
+      form.reset(); }); } function eliminar(id) { if (confirm('¿Eliminar este
+      producto?')) { console.log('🗑️ Eliminando producto ID:', id);
+      socket.emit('deleteProduct', id); } } function mostrarProductos(productos)
+      { console.log('🔄 Actualizando vista con', productos.length, 'productos');
+      if (productos.length === 0) { lista.innerHTML = ''; vacio.style.display =
+      'block'; return; } vacio.style.display = 'none'; let html = ''; for (let i
+      = 0; i < productos.length; i++) { const p = productos[i]; html += '<div
+      class="col-md-4 mb-3">'; html += '<div class="card">'; html += '<div
+      class="card-body">'; html += '<h5>' + p.title + '</h5>'; html += '<p>' +
+      p.description + '</p>'; html += '<p><strong>$' + p.price +
+      '</strong></p>'; html += '<p>Stock: ' + p.stock + ' | ' + p.category +
+      '</p>'; html += '<button class="btn btn-danger btn-sm" onclick="eliminar('
+      + p.id + ')">Eliminar</button>'; html += '</div>'; html += '</div>'; html
+      += '</div>'; } lista.innerHTML = html; } window.eliminar = eliminar;
+      console.log('🎯 WebSocket configurado y listo');
+    </script>
+  </body>
+</html>

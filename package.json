@@ -1,16 +1,23 @@
 {
-  "name": "entrega-2",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "entrega-2-restructured",
+  "version": "2.0.0",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "start:old": "node app.js",
+    "test": "node test-entrega2.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "backend",
+    "express",
+    "websockets",
+    "handlebars",
+    "coderhouse"
+  ],
+  "author": "Francisco Haro",
   "license": "ISC",
-  "description": "",
+  "description": "Entrega 2 - Backend con WebSockets y arquitectura profesional",
   "dependencies": {
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
