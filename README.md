@@ -1,4 +1,4 @@
-# Entrega Nº1 - Coderhouse Backend
+# ENTREGA-2 - Coderhouse Backend
 
 Servidor en Node.js + Express para gestionar productos y carritos.
 
