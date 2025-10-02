@@ -71,6 +71,10 @@ class CartManager {
     await this.writeCarts(carts);
     return cart;
   }
+
+  async getCarts() {
+    return await this.readCarts();
+  }
 }
 
 module.exports = CartManager;
