@@ -1,93 +1,180 @@
-# ENTREGA-2 - Coderhouse Backend
+# 🚀 Backend Professional - Entrega 2 Coderhouse# ENTREGA-2 - Coderhouse Backend
 
-Servidor en Node.js + Express para gestionar productos y carritos.
+## 📋 DescripciónServidor en Node.js + Express para gestionar productos y carritos.
+
+Proyecto backend con **WebSockets**, **Handlebars** y **arquitectura profesional**. Implementa gestión de productos en tiempo real con persistencia JSON y estructura modular escalable.
 
 ## Instalación y Ejecución
 
-```bash
-npm install
-npm start
-```
+## 🏗️ Estructura del Proyecto
 
-El servidor corre en `http://localhost:3000`
+````bash
 
-## Estructura del Proyecto
+```npm install
 
-```
-entrega-1/
-├── data/
-│   ├── products.json
-│   └── carts.json
-├── managers/
-│   ├── ProductManager.js
-│   └── CartManager.js
-├── routes/
-│   ├── products.js
-│   └── carts.js
-├── app.js
-├── package.json
-└── README.md
-```
+📦 proyecto/npm start
 
-## API - Productos
+├── 📋 package.json                 # Configuración y dependencias```
 
-| Método | Endpoint             | Descripción         |
-| ------ | -------------------- | ------------------- |
+├── 🚀 src/                         # Código fuente principal
+
+│   ├── 🎯 app.js                  # Servidor principalEl servidor corre en `http://localhost:3000`
+
+│   ├── 📊 dao/                    # Data Access Objects
+
+│   │   ├── productManager.js      # Gestión de productos## Estructura del Proyecto
+
+│   │   └── cartManager.js         # Gestión de carritos
+
+│   ├── 🛣️ routes/                 # Rutas modulares```
+
+│   │   ├── productsRouter.js      # API de productosentrega-1/
+
+│   │   └── cartsRouter.js         # API de carritos├── data/
+
+│   ├── 🔧 middlewares/            # Middlewares personalizados│   ├── products.json
+
+│   │   ├── logger.js              # Logging de requests│   └── carts.json
+
+│   │   ├── auth.js                # Autenticación├── managers/
+
+│   │   └── format.js              # Formateo de datos│   ├── ProductManager.js
+
+│   └── 🎨 views/                  # Plantillas Handlebars│   └── CartManager.js
+
+│       ├── layouts/main.handlebars # Layout principal├── routes/
+
+│       ├── home.handlebars        # Vista estática│   ├── products.js
+
+│       ├── realTimeProducts.handlebars # Vista tiempo real│   └── carts.js
+
+│       ├── dashboard.handlebars   # Panel de control├── app.js
+
+│       └── error.handlebars       # Página de errores├── package.json
+
+├── 🎨 public/                     # Archivos estáticos└── README.md
+
+│   └── js/realtime.js            # Cliente WebSocket```
+
+├── 💾 data/                       # Persistencia JSON
+
+│   ├── products.json             # Datos de productos## API - Productos
+
+│   └── carts.json               # Datos de carritos
+
+└── 🧪 test-entrega2.js           # Pruebas WebSocket| Método | Endpoint             | Descripción         |
+
+```| ------ | -------------------- | ------------------- |
+
 | GET    | `/api/products`      | Listar productos    |
-| GET    | `/api/products/:pid` | Producto por ID     |
+
+## 🔧 Instalación y Uso| GET    | `/api/products/:pid` | Producto por ID     |
+
 | POST   | `/api/products`      | Crear producto      |
-| PUT    | `/api/products/:pid` | Actualizar producto |
-| DELETE | `/api/products/:pid` | Eliminar producto   |
+
+```bash| PUT    | `/api/products/:pid` | Actualizar producto |
+
+# Instalar dependencias| DELETE | `/api/products/:pid` | Eliminar producto   |
+
+npm install
 
 Ejemplo producto:
 
-```json
+# Iniciar servidor principal
+
+npm start```json
+
 {
-  "id": 1,
-  "title": "Producto ejemplo",
+
+# Desarrollo con nodemon  "id": 1,
+
+npm run dev  "title": "Producto ejemplo",
+
   "description": "Descripción",
-  "code": "ABC123",
-  "price": 100,
-  "status": true,
+
+# Probar WebSocket  "code": "ABC123",
+
+npm test  "price": 100,
+
+```  "status": true,
+
   "stock": 50,
-  "category": "Categoría",
+
+## 🌐 Rutas Disponibles  "category": "Categoría",
+
   "thumbnails": []
-}
-```
 
-## API - Carritos
+| Ruta | Descripción | Tipo |}
 
-| Método | Endpoint                       | Descripción      |
-| ------ | ------------------------------ | ---------------- |
+|------|-------------|------|```
+
+| `/` | Vista home con productos | Vista |
+
+| `/realtimeproducts` | Gestión tiempo real | Vista |## API - Carritos
+
+| `/dashboard` | Panel de estadísticas | Vista |
+
+| `/api/products` | CRUD productos | API || Método | Endpoint                       | Descripción      |
+
+| `/api/carts` | CRUD carritos | API || ------ | ------------------------------ | ---------------- |
+
 | POST   | `/api/carts`                   | Crear carrito    |
-| GET    | `/api/carts/:cid`              | Ver carrito      |
+
+## ⚡ Tecnologías| GET    | `/api/carts/:cid`              | Ver carrito      |
+
 | POST   | `/api/carts/:cid/product/:pid` | Agregar producto |
 
-Ejemplo carrito:
+- **Node.js** + **Express.js** - Backend
 
-```json
-{
+- **Socket.IO** - WebSockets tiempo real  Ejemplo carrito:
+
+- **Handlebars** - Motor de plantillas
+
+- **Bootstrap 5** - Frontend responsive```json
+
+- **JSON** - Persistencia de datos{
+
   "id": 1,
-  "products": [
+
+## 📊 Funcionalidades  "products": [
+
     {
-      "product": 1,
-      "quantity": 2
-    }
-  ]
-}
-```
 
-## Notas
+✅ **WebSocket en tiempo real**        "product": 1,
 
-- Los IDs se generan automáticamente
-- Los datos se persisten en archivos JSON
-- Se validan campos requeridos y códigos únicos
-- Separación en managers y rutas
-- Puerto actualizado a 3000 para evitar conflictos
+✅ **Dashboard con estadísticas**        "quantity": 2
 
-## Uso
+✅ **API REST completa**      }
 
-Crear producto:
+✅ **Interfaz responsive**    ]
+
+✅ **Arquitectura modular**  }
+
+✅ **Middlewares personalizados**  ```
+
+
+
+## 🎯 URLs de Acceso## Notas
+
+
+
+```- Los IDs se generan automáticamente
+
+🏠 Home:        http://localhost:3000/- Los datos se persisten en archivos JSON
+
+⚡ Tiempo Real: http://localhost:3000/realtimeproducts- Se validan campos requeridos y códigos únicos
+
+📊 Dashboard:   http://localhost:3000/dashboard- Separación en managers y rutas
+
+```- Puerto actualizado a 3000 para evitar conflictos
+
+
+
+---## Uso
+
+
+
+**Proyecto desarrollado para Coderhouse - Backend Developer**Crear producto:
 
 ```bash
 curl -X POST http://localhost:3000/api/products \
@@ -100,7 +187,7 @@ curl -X POST http://localhost:3000/api/products \
     "stock": 25,
     "category": "Electrónicos"
   }'
-```
+````
 
 Crear carrito:
 
