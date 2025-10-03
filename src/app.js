@@ -15,25 +15,12 @@ const PORT = 3000;
 
 const productManager = new ProductManager();
 
-// Configurar Handlebars
+// Configuración de Handlebars
 app.engine(
   "handlebars",
   engine({
     defaultLayout: "main",
     extname: ".handlebars",
-    helpers: {
-      // Helper para comparar números
-      lt: (a, b) => a < b,
-      gt: (a, b) => a > b,
-      eq: (a, b) => a === b,
-      // Helper para formatear precios
-      formatPrice: (price) => {
-        return new Intl.NumberFormat("es-AR", {
-          style: "currency",
-          currency: "ARS",
-        }).format(price);
-      },
-    },
   })
 );
 app.set("view engine", "handlebars");
@@ -42,7 +29,7 @@ app.set("views", path.join(__dirname, "views"));
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // Hacer io disponible en las rutas
 app.set("io", io);
@@ -60,7 +47,7 @@ app.get("/", async (req, res) => {
       products,
     });
   } catch (error) {
-    res.status(500).render("error", { message: "Error al cargar productos" });
+    res.status(500).send("Error al cargar productos");
   }
 });
 
@@ -72,32 +59,7 @@ app.get("/realtimeproducts", async (req, res) => {
       products,
     });
   } catch (error) {
-    res.status(500).render("error", { message: "Error al cargar productos" });
-  }
-});
-
-// Ruta de dashboard
-app.get("/dashboard", async (req, res) => {
-  try {
-    const products = await productManager.getProducts();
-    const stats = {
-      totalProducts: products.length,
-      totalValue: products.reduce((sum, p) => sum + p.price * p.stock, 0),
-      lowStock: products.filter((p) => p.stock < 5).length,
-      categories: [...new Set(products.map((p) => p.category))].length,
-    };
-
-    res.render("dashboard", {
-      title: "Dashboard - Estadísticas",
-      stats,
-      products: products.slice(0, 5),
-    });
-  } catch (error) {
-    console.error("Error al cargar dashboard:", error);
-    res.status(500).render("error", {
-      message: "Error al cargar dashboard",
-      error: error.message,
-    });
+    res.status(500).send("Error al cargar productos");
   }
 });
 

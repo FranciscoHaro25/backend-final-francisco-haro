@@ -1,33 +1,60 @@
-# 🚀 Backend Professional - Entrega 2 Coderhouse# ENTREGA-2 - Coderhouse Backend
+# Entrega 2 - WebSockets# 🚀 Backend Professional - Entrega 2 Coderhouse# ENTREGA-2 - Coderhouse Backend
 
-## 📋 DescripciónServidor en Node.js + Express para gestionar productos y carritos.
+## Descripción## 📋 DescripciónServidor en Node.js + Express para gestionar productos y carritos.
+
+Proyecto backend con WebSockets y Handlebars según consigna de Coderhouse.
 
 Proyecto backend con **WebSockets**, **Handlebars** y **arquitectura profesional**. Implementa gestión de productos en tiempo real con persistencia JSON y estructura modular escalable.
 
-## Instalación y Ejecución
+## Instalación
 
-## 🏗️ Estructura del Proyecto
+```bash## Instalación y Ejecución
+
+npm install
+
+npm start## 🏗️ Estructura del Proyecto
+
+```
 
 ````bash
 
-```npm install
+## Rutas
 
-📦 proyecto/npm start
+- `/` - Vista home.handlebars con lista de productos```npm install
 
-├── 📋 package.json                 # Configuración y dependencias```
+- `/realtimeproducts` - Vista realTimeProducts.handlebars con WebSockets
 
-├── 🚀 src/                         # Código fuente principal
+- `/api/products` - API REST para productos📦 proyecto/npm start
 
-│   ├── 🎯 app.js                  # Servidor principalEl servidor corre en `http://localhost:3000`
 
-│   ├── 📊 dao/                    # Data Access Objects
+
+## Funcionalidades├── 📋 package.json                 # Configuración y dependencias```
+
+- ✅ Motor de plantillas Handlebars configurado
+
+- ✅ Servidor Socket.IO integrado  ├── 🚀 src/                         # Código fuente principal
+
+- ✅ Vista home.handlebars con lista de productos
+
+- ✅ Vista realTimeProducts.handlebars con tiempo real│   ├── 🎯 app.js                  # Servidor principalEl servidor corre en `http://localhost:3000`
+
+- ✅ WebSocket actualiza automáticamente al crear/eliminar productos
+
+- ✅ Formulario en realTimeProducts.handlebars│   ├── 📊 dao/                    # Data Access Objects
+
+- ✅ Conexión HTTP con Socket emits en rutas POST/DELETE
 
 │   │   ├── productManager.js      # Gestión de productos## Estructura del Proyecto
 
-│   │   └── cartManager.js         # Gestión de carritos
+## Tecnologías
 
-│   ├── 🛣️ routes/                 # Rutas modulares```
+- Node.js + Express│   │   └── cartManager.js         # Gestión de carritos
 
+- Socket.IO
+
+- Handlebars│   ├── 🛣️ routes/                 # Rutas modulares```
+
+- Bootstrap 5
 │   │   ├── productsRouter.js      # API de productosentrega-1/
 
 │   │   └── cartsRouter.js         # API de carritos├── data/
