@@ -2,6 +2,7 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const app = require("./src/app");
 const { configureSocket } = require("./src/sockets/socketEvents");
+const socketMiddleware = require("./src/middlewares/socketMiddleware");
 const { port } = require("./src/config/config");
 
 // Crear servidor HTTP
@@ -14,6 +15,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// Integrar Socket.IO con Express
+app.use(socketMiddleware(io));
 
 // Configurar eventos de websocket
 configureSocket(io);

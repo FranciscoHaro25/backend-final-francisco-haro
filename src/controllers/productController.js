@@ -39,14 +39,14 @@ class ProductController {
   }
 
   // Crear nuevo producto
-  async createProduct(req, res) {
+  async createProduct(req, res, next) {
     try {
       const newProduct = await productManager.addProduct(req.body);
 
-      // Notificar cambios a clientes conectados
-      if (req.app && req.app.locals.io) {
+      // Notificar cambios a clientes conectados via Socket.IO
+      if (req.io) {
         const products = await productManager.getProducts();
-        req.app.locals.io.emit("updateProducts", products);
+        req.io.emit("updateProducts", products);
       }
 
       res.status(201).json({
@@ -54,11 +54,7 @@ class ProductController {
         product: newProduct,
       });
     } catch (error) {
-      console.error("Error al crear producto:", error);
-      res.status(400).json({
-        error: "Error al crear producto",
-        message: error.message,
-      });
+      next(error);
     }
   }
 
