@@ -2,9 +2,8 @@ const ProductManager = require("../dao/productManager");
 
 const productManager = new ProductManager();
 
-// Controller para productos
 class ProductController {
-  // Lista de productos
+  // Obtener lista de productos
   async getProducts(req, res) {
     try {
       const { limit } = req.query;
@@ -21,7 +20,7 @@ class ProductController {
     }
   }
 
-  // Buscar por ID
+  // Obtener producto por ID
   async getProductById(req, res) {
     try {
       const product = await productManager.getProductById(req.params.pid);
@@ -38,13 +37,16 @@ class ProductController {
     }
   }
 
-  // Crear producto nuevo
+  // Crear nuevo producto
   async createProduct(req, res) {
     try {
       const newProduct = await productManager.addProduct(req.body);
 
-      // Avisar a todos los clientes conectados
-      await this.broadcastProductUpdate(req.app);
+      // Notificar cambios a clientes conectados
+      if (req.app && req.app.locals.io) {
+        const products = await productManager.getProducts();
+        req.app.locals.io.emit("updateProducts", products);
+      }
 
       res.status(201).json({
         message: "Producto creado exitosamente",
@@ -59,7 +61,7 @@ class ProductController {
     }
   }
 
-  // PUT /api/products/:pid
+  // Actualizar producto
   async updateProduct(req, res) {
     try {
       const updatedProduct = await productManager.updateProduct(
@@ -68,7 +70,10 @@ class ProductController {
       );
 
       // Emitir evento WebSocket para tiempo real
-      await this.broadcastProductUpdate(req.app);
+      if (req.app && req.app.locals.io) {
+        const products = await productManager.getProducts();
+        req.app.locals.io.emit("updateProducts", products);
+      }
 
       res.json({
         message: "Producto actualizado exitosamente",
@@ -83,13 +88,16 @@ class ProductController {
     }
   }
 
-  // DELETE /api/products/:pid
+  // Eliminar producto
   async deleteProduct(req, res) {
     try {
       const deletedProduct = await productManager.deleteProduct(req.params.pid);
 
       // Emitir evento WebSocket para tiempo real
-      await this.broadcastProductUpdate(req.app);
+      if (req.app && req.app.locals.io) {
+        const products = await productManager.getProducts();
+        req.app.locals.io.emit("updateProducts", products);
+      }
 
       res.json({
         message: "Producto eliminado exitosamente",
@@ -104,7 +112,7 @@ class ProductController {
     }
   }
 
-  // Helper para notificar cambios via WebSocket
+  // Notificar cambios via WebSocket
   async broadcastProductUpdate(app) {
     try {
       const io = app.get("io");

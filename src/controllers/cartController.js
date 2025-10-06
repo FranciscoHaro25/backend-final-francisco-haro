@@ -1,10 +1,7 @@
 const CartManager = require("../dao/cartManager");
-
 const cartManager = new CartManager();
 
-// Controller de carritos
 class CartController {
-  // Crear carrito
   async createCart(req, res) {
     try {
       const newCart = await cartManager.createCart();
@@ -15,13 +12,12 @@ class CartController {
     } catch (error) {
       console.error("Error al crear carrito:", error);
       res.status(500).json({
-        error: "Error al crear carrito",
+        error: "Error del servidor",
         message: error.message,
       });
     }
   }
 
-  // GET /api/carts/:cid
   async getCartById(req, res) {
     try {
       const cart = await cartManager.getCartById(req.params.cid);
@@ -38,19 +34,21 @@ class CartController {
     }
   }
 
-  // POST /api/carts/:cid/product/:pid
   async addProductToCart(req, res) {
     try {
       const { cid, pid } = req.params;
-      const cart = await cartManager.addProductToCart(cid, pid);
-
+      const updatedCart = await cartManager.addProductToCart(cid, pid);
+      
       res.json({
         message: "Producto agregado al carrito exitosamente",
-        cart: cart,
+        cart: updatedCart,
       });
     } catch (error) {
       console.error("Error al agregar producto al carrito:", error);
-      res.status(400).json({
+      
+      const status = error.message.includes("no encontrado") ? 404 : 400;
+      
+      res.status(status).json({
         error: "Error al agregar producto al carrito",
         message: error.message,
       });

@@ -1,18 +1,13 @@
-// WebSocket events para tiempo real
-
 const ProductManager = require("../dao/productManager");
 
 const productManager = new ProductManager();
 
-// Configurar eventos de Socket.IO
 const configureSocket = (io) => {
   io.on("connection", (socket) => {
     console.log("Cliente conectado:", socket.id);
 
-    // Mandar productos cuando se conecta
     loadAndSendProducts(socket);
 
-    // Crear producto
     socket.on("newProduct", async (productData) => {
       try {
         await productManager.addProduct(productData);
@@ -22,7 +17,6 @@ const configureSocket = (io) => {
       }
     });
 
-    // Manejar eliminación de producto
     socket.on("deleteProduct", async (productId) => {
       try {
         await productManager.deleteProduct(productId);

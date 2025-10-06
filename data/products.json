@@ -1,57 +1,43 @@
 [
   {
     "id": 1,
-    "title": "Smartphone Galaxy S24",
-    "description": "Teléfono inteligente con pantalla AMOLED de 6.8 pulgadas, cámara triple y 256 GB de almacenamiento.",
-    "code": "GAL-S24",
+    "title": "Smartphone Galaxy S23",
+    "description": "Teléfono inteligente de última generación con cámara profesional",
+    "code": "SAMS23001",
     "price": 899.99,
     "status": true,
-    "stock": 15,
+    "stock": 25,
     "category": "Electrónicos",
-    "thumbnails": []
+    "thumbnails": [
+      "/img/samsung-s23-1.jpg",
+      "/img/samsung-s23-2.jpg"
+    ]
   },
   {
     "id": 2,
-    "title": "Auriculares Bluetooth Pro",
-    "description": "Auriculares inalámbricos con cancelación de ruido activa y micrófono integrado.",
-    "code": "AUR-BTPRO",
-    "price": 129.99,
+    "title": "Laptop Gaming MSI",
+    "description": "Laptop para gaming con RTX 4060 y 16GB RAM",
+    "code": "MSIGAM001",
+    "price": 1299.99,
     "status": true,
-    "stock": 25,
-    "category": "Audio",
-    "thumbnails": []
+    "stock": 15,
+    "category": "Computadoras",
+    "thumbnails": [
+      "/img/msi-laptop-1.jpg"
+    ]
   },
   {
     "id": 3,
-    "title": "Laptop XBook Air 14",
-    "description": "Laptop ultradelgada de 14 pulgadas con procesador Intel i7, 16 GB RAM y SSD de 512 GB.",
-    "code": "XBA14-2024",
-    "price": 1249.99,
-    "status": true,
-    "stock": 8,
-    "category": "Computación",
-    "thumbnails": []
-  },
-  {
-    "id": 4,
-    "title": "Smartwatch FitOne",
-    "description": "Reloj inteligente resistente al agua con sensor cardíaco, GPS y batería de 7 días.",
-    "code": "SWFIT-01",
-    "price": 179.99,
+    "title": "Audífonos Sony WH-1000XM5",
+    "description": "Audífonos inalámbricos con cancelación de ruido",
+    "code": "SONYWH005",
+    "price": 399.99,
     "status": true,
     "stock": 30,
-    "category": "Wearables",
-    "thumbnails": []
-  },
-  {
-    "id": 5,
-    "title": "Monitor Curvo 27'' UltraView",
-    "description": "Monitor curvo Full HD de 27 pulgadas con tasa de refresco de 144Hz y tecnología antirreflejo.",
-    "code": "MON-27UV",
-    "price": 299.99,
-    "status": true,
-    "stock": 12,
-    "category": "Periféricos",
-    "thumbnails": []
+    "category": "Audio",
+    "thumbnails": [
+      "/img/sony-headphones-1.jpg",
+      "/img/sony-headphones-2.jpg"
+    ]
   }
 ]

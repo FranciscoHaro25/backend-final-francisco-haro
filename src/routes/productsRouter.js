@@ -3,7 +3,6 @@ const productController = require("../controllers/productController");
 
 const router = express.Router();
 
-// API de productos
 router.get("/", productController.getProducts);
 router.get("/:pid", productController.getProductById);
 router.post("/", productController.createProduct);

@@ -1,17 +1,13 @@
-// Configuración de Express y middlewares
-
 const express = require("express");
 const { engine } = require("express-handlebars");
 const path = require("path");
 
-// Routers
 const productsRouter = require("./routes/productsRouter");
 const cartsRouter = require("./routes/cartsRouter");
 const viewsRouter = require("./routes/viewsRouter");
 
 const app = express();
 
-// Handlebars setup
 app.engine(
   "handlebars",
   engine({
@@ -22,16 +18,12 @@ app.engine(
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
-// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
 
-// Rutas de API
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
-
-// Rutas de vistas
 app.use("/", viewsRouter);
 
 module.exports = app;
