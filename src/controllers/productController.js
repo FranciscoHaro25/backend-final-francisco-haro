@@ -2,9 +2,9 @@ const ProductManager = require("../dao/productManager");
 
 const productManager = new ProductManager();
 
-// Controlador de productos - maneja todo el CRUD + WebSockets
+// Controller para productos
 class ProductController {
-  // Listar productos (opcional: con límite)
+  // Lista de productos
   async getProducts(req, res) {
     try {
       const { limit } = req.query;
@@ -21,7 +21,7 @@ class ProductController {
     }
   }
 
-  // Buscar producto por ID específico
+  // Buscar por ID
   async getProductById(req, res) {
     try {
       const product = await productManager.getProductById(req.params.pid);
@@ -38,12 +38,12 @@ class ProductController {
     }
   }
 
-  // POST /api/products
+  // Crear producto nuevo
   async createProduct(req, res) {
     try {
       const newProduct = await productManager.addProduct(req.body);
 
-      // Emitir evento WebSocket para tiempo real
+      // Avisar a todos los clientes conectados
       await this.broadcastProductUpdate(req.app);
 
       res.status(201).json({
@@ -104,7 +104,7 @@ class ProductController {
     }
   }
 
-  // Método auxiliar para WebSocket
+  // Helper para notificar cambios via WebSocket
   async broadcastProductUpdate(app) {
     try {
       const io = app.get("io");

@@ -1,12 +1,13 @@
 const fs = require("fs").promises;
 const path = require("path");
 
-// DAO - Data Access Object para carritos
+// Gestor de carritos - persistencia JSON
 class CartManager {
   constructor() {
     this.path = path.join(__dirname, "../../data/carts.json");
   }
 
+  // Leer carritos del archivo
   async readCarts() {
     try {
       const data = await fs.readFile(this.path, "utf-8");

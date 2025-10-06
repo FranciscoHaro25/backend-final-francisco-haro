@@ -1,19 +1,15 @@
-/**
- * Cliente WebSocket para funcionalidad en tiempo real
- * Maneja formularios, actualizaciones y comunicación con el servidor
- */
+// Script para manejar WebSockets en tiempo real
+// Francisco Haro - Entrega 2
 
-// Conectar con Socket.IO
 const socket = io();
 
-// Referencias a elementos del DOM
+// Referencias DOM
 const connectionStatus = document.getElementById("connectionStatus");
 const productForm = document.getElementById("productForm");
 const productsList = document.getElementById("productsList");
 const noProducts = document.getElementById("noProducts");
 
-// === MANEJO DE CONEXIÓN ===
-
+// Eventos de conexión
 socket.on("connect", () => {
   console.log("Conectado al servidor WebSocket");
   connectionStatus.className = "alert alert-success";
@@ -32,23 +28,23 @@ socket.on("connect_error", (error) => {
   connectionStatus.textContent = "Error de conexión WebSocket";
 });
 
-// === EVENTOS DE SERVIDOR ===
+// Eventos del servidor
 
-// Actualizar lista cuando hay cambios
+// Actualizar cuando cambian los productos
 socket.on("updateProducts", (products) => {
   console.log("Productos actualizados:", products);
   renderProducts(products);
 });
 
-// Mostrar errores del servidor
+// Mostrar errores
 socket.on("error", (error) => {
   console.error("Error del servidor:", error);
   alert("Error: " + error.message);
 });
 
-// === MANEJO DE FORMULARIOS ===
+// Manejo del formulario
 
-// Procesar envío de nuevo producto
+// Enviar nuevo producto
 productForm.addEventListener("submit", (e) => {
   e.preventDefault();
 

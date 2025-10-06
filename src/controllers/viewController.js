@@ -2,9 +2,9 @@ const ProductManager = require("../dao/productManager");
 
 const productManager = new ProductManager();
 
-// Controller para las vistas con Handlebars
+// Controller de vistas
 class ViewController {
-  // Home page
+  // Página principal
   async renderHome(req, res) {
     try {
       const products = await productManager.getProducts();
