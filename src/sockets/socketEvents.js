@@ -2,30 +2,35 @@ const ProductManager = require("../dao/productManager");
 const {
   socketLogger,
   socketValidateProduct,
+  socketValidateProductId,
   socketErrorHandler,
-} = require("../middlewares/socketMiddlewares");
+  socketAuth,
+} = require("../middlewares/socketSecurity");
 
 const productManager = new ProductManager();
 
-// Configurar eventos de WebSocket
+// Configurar eventos de WebSocket con seguridad
 const configureSocket = (io) => {
+  // Middleware de autenticación para todas las conexiones
+  io.use(socketAuth);
+
   io.on("connection", (socket) => {
     socketLogger("connection", { socketId: socket.id }, socket);
 
     // Enviar productos al conectarse
     loadAndSendProducts(socket);
 
-    // Manejar creación de productos
+    // Manejar creación de productos con validaciones de seguridad
     socket.on("newProduct", async (productData) => {
       try {
         // Logging del evento
         socketLogger("newProduct", productData, socket);
 
-        // Validar datos del producto
-        socketValidateProduct(productData);
+        // Validar y sanitizar datos del producto
+        const validatedProduct = socketValidateProduct(productData, socket);
 
-        // Crear producto
-        await productManager.addProduct(productData);
+        // Crear producto con datos seguros
+        await productManager.addProduct(validatedProduct);
         await broadcastProducts(io);
 
         // Log de éxito
@@ -37,18 +42,16 @@ const configureSocket = (io) => {
       }
     });
 
-    // Manejar eliminación de productos
+    // Manejar eliminación de productos con validaciones de seguridad
     socket.on("deleteProduct", async (productId) => {
       try {
         // Logging del evento
         socketLogger("deleteProduct", { productId }, socket);
 
-        // Validar ID
-        if (!productId || isNaN(parseInt(productId))) {
-          throw new Error("ID de producto inválido");
-        }
+        // Validar ID con rate limiting y sanitización
+        const validatedId = socketValidateProductId(productId, socket);
 
-        await productManager.deleteProduct(productId);
+        await productManager.deleteProduct(validatedId);
         await broadcastProducts(io);
 
         // Log de éxito

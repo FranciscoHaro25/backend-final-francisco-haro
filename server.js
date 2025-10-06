@@ -3,6 +3,7 @@ const { Server } = require("socket.io");
 const app = require("./src/app");
 const { configureSocket } = require("./src/sockets/socketEvents");
 const socketMiddleware = require("./src/middlewares/socketMiddleware");
+const { createRateLimit } = require("./src/middlewares/validation");
 const { port } = require("./src/config/config");
 
 // Crear servidor HTTP
@@ -15,6 +16,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// Aplicar rate limiting global antes de otros middlewares
+app.use(createRateLimit());
 
 // Integrar Socket.IO con Express
 app.use(socketMiddleware(io));
