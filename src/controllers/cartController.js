@@ -1,7 +1,10 @@
 const CartManager = require("../dao/cartManager");
+
+// Instancia del manager para operaciones de carrito
 const cartManager = new CartManager();
 
 class CartController {
+  // Crear un nuevo carrito vacío
   async createCart(req, res) {
     try {
       const newCart = await cartManager.createCart();
@@ -18,6 +21,7 @@ class CartController {
     }
   }
 
+  // Obtener carrito por su ID
   async getCartById(req, res) {
     try {
       const cart = await cartManager.getCartById(req.params.cid);
@@ -34,20 +38,22 @@ class CartController {
     }
   }
 
+  // Agregar producto al carrito existente
   async addProductToCart(req, res) {
     try {
       const { cid, pid } = req.params;
       const updatedCart = await cartManager.addProductToCart(cid, pid);
-      
+
       res.json({
         message: "Producto agregado al carrito exitosamente",
         cart: updatedCart,
       });
     } catch (error) {
       console.error("Error al agregar producto al carrito:", error);
-      
+
+      // Determinar código de error apropiado
       const status = error.message.includes("no encontrado") ? 404 : 400;
-      
+
       res.status(status).json({
         error: "Error al agregar producto al carrito",
         message: error.message,

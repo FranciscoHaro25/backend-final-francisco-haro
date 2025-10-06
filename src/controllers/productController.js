@@ -1,5 +1,6 @@
 const ProductManager = require("../dao/productManager");
 
+// Instancia para manejar productos
 const productManager = new ProductManager();
 
 class ProductController {

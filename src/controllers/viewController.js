@@ -1,10 +1,10 @@
 const ProductManager = require("../dao/productManager");
 
+// Instancia para manejar productos en vistas
 const productManager = new ProductManager();
 
-// Controller de vistas
 class ViewController {
-  // Página principal
+  // Renderizar página principal
   async renderHome(req, res) {
     try {
       const products = await productManager.getProducts();
@@ -23,7 +23,7 @@ class ViewController {
     }
   }
 
-  // GET /realtimeproducts - Vista tiempo real
+  // Renderizar vista de productos en tiempo real
   async renderRealTimeProducts(req, res) {
     try {
       const products = await productManager.getProducts();
