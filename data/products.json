@@ -12,13 +12,24 @@
   },
   {
     "id": 2,
-    "title": "Producto de Prueba WebSocket",
-    "description": "Prueba de funcionalidad en tiempo real",
-    "code": "TEST-WS-001",
-    "price": 99.99,
+    "title": "Parlantes",
+    "description": "Parlantes de 2 Vías",
+    "code": "AJJDJS223",
+    "price": 20,
     "status": true,
     "stock": 10,
-    "category": "Pruebas",
+    "category": "Electrodomestico",
+    "thumbnails": []
+  },
+  {
+    "id": 3,
+    "title": "Audifono",
+    "description": "De copa",
+    "code": "GGS14556",
+    "price": 25,
+    "status": true,
+    "stock": 14,
+    "category": "Electro",
     "thumbnails": []
   }
 ]

@@ -1,42 +1,78 @@
-# Entrega 2 - WebSockets# 🚀 Backend Professional - Entrega 2 Coderhouse# ENTREGA-2 - Coderhouse Backend
+# Entrega 2 - WebSockets# Entrega 2 - WebSockets# 🚀 Backend Professional - Entrega 2 Coderhouse# ENTREGA-2 - Coderhouse Backend
 
-## Descripción## 📋 DescripciónServidor en Node.js + Express para gestionar productos y carritos.
+## Descripción## Descripción## 📋 DescripciónServidor en Node.js + Express para gestionar productos y carritos.
 
 Proyecto backend con WebSockets y Handlebars según consigna de Coderhouse.
 
-Proyecto backend con **WebSockets**, **Handlebars** y **arquitectura profesional**. Implementa gestión de productos en tiempo real con persistencia JSON y estructura modular escalable.
+Proyecto backend con WebSockets y Handlebars según consigna de Coderhouse.
 
 ## Instalación
 
-```bash## Instalación y Ejecución
+```bashProyecto backend con **WebSockets**, **Handlebars** y **arquitectura profesional**. Implementa gestión de productos en tiempo real con persistencia JSON y estructura modular escalable.
 
 npm install
 
-npm start## 🏗️ Estructura del Proyecto
+npm start## Instalación
 
 ```
 
-````bash
+`````bash## Instalación y Ejecución
+
+## Desarrollo
+
+```bashnpm install
+
+npm run dev  # Usa node --watch para recarga automática
+
+```npm start## 🏗️ Estructura del Proyecto
+
+
+
+## Rutas```
+
+- `/` - Vista home.handlebars con lista de productos
+
+- `/realtimeproducts` - Vista realTimeProducts.handlebars con WebSockets````bash
+
+- `/api/products` - API REST para productos
 
 ## Rutas
 
-- `/` - Vista home.handlebars con lista de productos```npm install
+## Funcionalidades
 
-- `/realtimeproducts` - Vista realTimeProducts.handlebars con WebSockets
+- ✅ Motor de plantillas Handlebars configurado- `/` - Vista home.handlebars con lista de productos```npm install
 
-- `/api/products` - API REST para productos📦 proyecto/npm start
+- ✅ Servidor Socket.IO integrado
+
+- ✅ Vista home.handlebars con lista de productos- `/realtimeproducts` - Vista realTimeProducts.handlebars con WebSockets
+
+- ✅ Vista realTimeProducts.handlebars con tiempo real
+
+- ✅ WebSocket actualiza automáticamente al crear/eliminar productos- `/api/products` - API REST para productos📦 proyecto/npm start
+
+- ✅ Formulario en realTimeProducts.handlebars
+
+- ✅ Conexión HTTP con Socket emits en rutas POST/DELETE
 
 
 
-## Funcionalidades├── 📋 package.json                 # Configuración y dependencias```
+## Tecnologías## Funcionalidades├── 📋 package.json                 # Configuración y dependencias```
 
-- ✅ Motor de plantillas Handlebars configurado
+- Node.js + Express
 
-- ✅ Servidor Socket.IO integrado  ├── 🚀 src/                         # Código fuente principal
+- Socket.IO- ✅ Motor de plantillas Handlebars configurado
 
-- ✅ Vista home.handlebars con lista de productos
+- Handlebars
 
-- ✅ Vista realTimeProducts.handlebars con tiempo real│   ├── 🎯 app.js                  # Servidor principalEl servidor corre en `http://localhost:3000`
+- Bootstrap 5- ✅ Servidor Socket.IO integrado  ├── 🚀 src/                         # Código fuente principal
+
+
+
+## Scripts- ✅ Vista home.handlebars con lista de productos
+
+- `npm start` - Inicia el servidor
+
+- `npm run dev` - Desarrollo con node --watch (sin nodemon)- ✅ Vista realTimeProducts.handlebars con tiempo real│   ├── 🎯 app.js                  # Servidor principalEl servidor corre en `http://localhost:3000`
 
 - ✅ WebSocket actualiza automáticamente al crear/eliminar productos
 
@@ -214,7 +250,7 @@ curl -X POST http://localhost:3000/api/products \
     "stock": 25,
     "category": "Electrónicos"
   }'
-````
+`````
 
 Crear carrito:
 
