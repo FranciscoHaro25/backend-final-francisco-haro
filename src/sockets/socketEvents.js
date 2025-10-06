@@ -1,22 +1,18 @@
-/**
- * Configuración de eventos WebSocket
- * Maneja la comunicación en tiempo real para productos
- */
+// WebSocket events para tiempo real
 
 const ProductManager = require("../dao/productManager");
 
-// Manager para operaciones de productos
 const productManager = new ProductManager();
 
-// Configurar todos los eventos de Socket.IO
+// Configurar eventos de Socket.IO
 const configureSocket = (io) => {
   io.on("connection", (socket) => {
     console.log("Cliente conectado:", socket.id);
 
-    // Enviar lista actual de productos al cliente nuevo
+    // Mandar productos cuando se conecta
     loadAndSendProducts(socket);
 
-    // Escuchar cuando se crea un producto
+    // Crear producto
     socket.on("newProduct", async (productData) => {
       try {
         await productManager.addProduct(productData);

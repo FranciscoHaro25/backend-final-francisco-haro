@@ -1,14 +1,10 @@
 const ProductManager = require("../dao/productManager");
 
-// Manager para obtener datos de productos
 const productManager = new ProductManager();
 
-/**
- * Controlador para renderizar vistas con Handlebars
- * Maneja las páginas principales de la aplicación
- */
+// Controller para las vistas con Handlebars
 class ViewController {
-  // Renderizar página principal con lista de productos
+  // Home page
   async renderHome(req, res) {
     try {
       const products = await productManager.getProducts();

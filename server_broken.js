@@ -15,13 +15,11 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
-  },
-});
 
-// Configurar eventos WebSocket
+// Configurar eventos de Socket.IO
 configureSocket(io);
 
-// Arrancar servidor
+// Iniciar el servidor
 server.listen(port, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
   console.log(`📡 Socket.IO configurado para tiempo real`);

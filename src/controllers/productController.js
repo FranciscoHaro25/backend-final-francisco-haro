@@ -1,14 +1,10 @@
 const ProductManager = require("../dao/productManager");
 
-// Instancia del manager para manejar productos
 const productManager = new ProductManager();
 
-/**
- * Controlador para manejar todas las operaciones relacionadas con productos
- * Incluye CRUD completo y integración con WebSockets para tiempo real
- */
+// Controlador de productos - maneja todo el CRUD + WebSockets
 class ProductController {
-  // Obtener lista de productos (con limite opcional)
+  // Listar productos (opcional: con límite)
   async getProducts(req, res) {
     try {
       const { limit } = req.query;

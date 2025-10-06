@@ -1,14 +1,10 @@
 const CartManager = require("../dao/cartManager");
 
-// Instancia para manejar operaciones de carrito
 const cartManager = new CartManager();
 
-/**
- * Controlador para gestionar carritos de compra
- * Maneja creación de carritos y agregado de productos
- */
+// Manejo de carritos de compra
 class CartController {
-  // Crear un nuevo carrito vacío
+  // Crear carrito nuevo
   async createCart(req, res) {
     try {
       const newCart = await cartManager.createCart();

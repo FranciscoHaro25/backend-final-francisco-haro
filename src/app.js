@@ -1,20 +1,17 @@
-/**
- * Configuración principal de Express
- * Define middlewares, motor de plantillas y rutas
- */
+// Configuración de Express y middlewares
 
 const express = require("express");
 const { engine } = require("express-handlebars");
 const path = require("path");
 
-// Importar routers
+// Routers
 const productsRouter = require("./routes/productsRouter");
 const cartsRouter = require("./routes/cartsRouter");
 const viewsRouter = require("./routes/viewsRouter");
 
 const app = express();
 
-// Motor de plantillas Handlebars
+// Handlebars setup
 app.engine(
   "handlebars",
   engine({

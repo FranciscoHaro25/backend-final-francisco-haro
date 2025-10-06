@@ -1,7 +1,4 @@
-/**
- * Configuración centralizada de la aplicación
- * Maneja variables de entorno y valores por defecto
- */
+// Configuración de variables de entorno
 
 require("dotenv").config();
 

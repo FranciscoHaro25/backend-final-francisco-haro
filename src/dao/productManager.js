@@ -1,23 +1,15 @@
-/**
- * Data Access Object para productos
- * Maneja persistencia en archivo JSON
- *
- * Funcionalidades:
- * - CRUD completo de productos
- * - Validaciones de negocio
- * - Manejo de IDs únicos
- */
+// Gestor de productos - persistencia en JSON
+// TODO: migrar a base de datos en el futuro
 
 const fs = require("fs").promises;
 const path = require("path");
 
 class ProductManager {
   constructor() {
-    // Ruta al archivo de datos
     this.path = path.join(__dirname, "../../data/products.json");
   }
 
-  // Leer productos desde archivo JSON
+  // Leer archivo de productos
   async readProducts() {
     try {
       const data = await fs.readFile(this.path, "utf-8");
