@@ -1,13 +1,19 @@
-// Configuración del cliente WebSocket
+/**
+ * Cliente WebSocket para funcionalidad en tiempo real
+ * Maneja formularios, actualizaciones y comunicación con el servidor
+ */
+
+// Conectar con Socket.IO
 const socket = io();
 
-// Referencias DOM
+// Referencias a elementos del DOM
 const connectionStatus = document.getElementById("connectionStatus");
 const productForm = document.getElementById("productForm");
 const productsList = document.getElementById("productsList");
 const noProducts = document.getElementById("noProducts");
 
-// Estados de conexión
+// === MANEJO DE CONEXIÓN ===
+
 socket.on("connect", () => {
   console.log("Conectado al servidor WebSocket");
   connectionStatus.className = "alert alert-success";
@@ -26,19 +32,23 @@ socket.on("connect_error", (error) => {
   connectionStatus.textContent = "Error de conexión WebSocket";
 });
 
-// Actualizar lista de productos
+// === EVENTOS DE SERVIDOR ===
+
+// Actualizar lista cuando hay cambios
 socket.on("updateProducts", (products) => {
   console.log("Productos actualizados:", products);
   renderProducts(products);
 });
 
-// Manejar errores
+// Mostrar errores del servidor
 socket.on("error", (error) => {
   console.error("Error del servidor:", error);
   alert("Error: " + error.message);
 });
 
-// Enviar nuevo producto
+// === MANEJO DE FORMULARIOS ===
+
+// Procesar envío de nuevo producto
 productForm.addEventListener("submit", (e) => {
   e.preventDefault();
 

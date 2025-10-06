@@ -1,9 +1,9 @@
 [
   {
     "id": 1,
-    "title": "Smartphone Galaxy",
-    "description": "Smartphone Android de última generación",
-    "code": "GAL-001",
+    "title": "Smartphone Galaxy S24",
+    "description": "Teléfono inteligente con pantalla AMOLED de 6.8 pulgadas, cámara triple y 256 GB de almacenamiento.",
+    "code": "GAL-S24",
     "price": 899.99,
     "status": true,
     "stock": 15,
@@ -12,24 +12,46 @@
   },
   {
     "id": 2,
-    "title": "Parlantes",
-    "description": "Parlantes de 2 Vías",
-    "code": "AJJDJS223",
-    "price": 20,
+    "title": "Auriculares Bluetooth Pro",
+    "description": "Auriculares inalámbricos con cancelación de ruido activa y micrófono integrado.",
+    "code": "AUR-BTPRO",
+    "price": 129.99,
     "status": true,
-    "stock": 10,
-    "category": "Electrodomestico",
+    "stock": 25,
+    "category": "Audio",
     "thumbnails": []
   },
   {
     "id": 3,
-    "title": "Audifono",
-    "description": "De copa",
-    "code": "GGS14556",
-    "price": 25,
+    "title": "Laptop XBook Air 14",
+    "description": "Laptop ultradelgada de 14 pulgadas con procesador Intel i7, 16 GB RAM y SSD de 512 GB.",
+    "code": "XBA14-2024",
+    "price": 1249.99,
     "status": true,
-    "stock": 14,
-    "category": "Electro",
+    "stock": 8,
+    "category": "Computación",
+    "thumbnails": []
+  },
+  {
+    "id": 4,
+    "title": "Smartwatch FitOne",
+    "description": "Reloj inteligente resistente al agua con sensor cardíaco, GPS y batería de 7 días.",
+    "code": "SWFIT-01",
+    "price": 179.99,
+    "status": true,
+    "stock": 30,
+    "category": "Wearables",
+    "thumbnails": []
+  },
+  {
+    "id": 5,
+    "title": "Monitor Curvo 27'' UltraView",
+    "description": "Monitor curvo Full HD de 27 pulgadas con tasa de refresco de 144Hz y tecnología antirreflejo.",
+    "code": "MON-27UV",
+    "price": 299.99,
+    "status": true,
+    "stock": 12,
+    "category": "Periféricos",
     "thumbnails": []
   }
 ]
