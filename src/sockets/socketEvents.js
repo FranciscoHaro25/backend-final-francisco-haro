@@ -1,11 +1,16 @@
 const ProductManager = require("../dao/productManager");
+const {
+  socketLogger,
+  socketValidateProduct,
+  socketErrorHandler,
+} = require("../middlewares/socketMiddlewares");
 
 const productManager = new ProductManager();
 
 // Configurar eventos de WebSocket
 const configureSocket = (io) => {
   io.on("connection", (socket) => {
-    console.log("Cliente conectado:", socket.id);
+    socketLogger("connection", { socketId: socket.id }, socket);
 
     // Enviar productos al conectarse
     loadAndSendProducts(socket);
@@ -13,25 +18,50 @@ const configureSocket = (io) => {
     // Manejar creación de productos
     socket.on("newProduct", async (productData) => {
       try {
+        // Logging del evento
+        socketLogger("newProduct", productData, socket);
+
+        // Validar datos del producto
+        socketValidateProduct(productData);
+
+        // Crear producto
         await productManager.addProduct(productData);
         await broadcastProducts(io);
+
+        // Log de éxito
+        console.log(
+          `[${new Date().toISOString()}] Producto creado exitosamente via Socket.IO`
+        );
       } catch (error) {
-        socket.emit("error", { message: error.message });
+        socketErrorHandler(error, socket, "newProduct");
       }
     });
 
     // Manejar eliminación de productos
     socket.on("deleteProduct", async (productId) => {
       try {
+        // Logging del evento
+        socketLogger("deleteProduct", { productId }, socket);
+
+        // Validar ID
+        if (!productId || isNaN(parseInt(productId))) {
+          throw new Error("ID de producto inválido");
+        }
+
         await productManager.deleteProduct(productId);
         await broadcastProducts(io);
+
+        // Log de éxito
+        console.log(
+          `[${new Date().toISOString()}] Producto eliminado exitosamente via Socket.IO`
+        );
       } catch (error) {
-        socket.emit("error", { message: error.message });
+        socketErrorHandler(error, socket, "deleteProduct");
       }
     });
 
     socket.on("disconnect", () => {
-      console.log("Cliente desconectado:", socket.id);
+      socketLogger("disconnect", { socketId: socket.id }, socket);
     });
   });
 };
