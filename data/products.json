@@ -8,7 +8,10 @@
     "status": true,
     "stock": 25,
     "category": "Electrónicos",
-    "thumbnails": ["/img/samsung-s23-1.jpg", "/img/samsung-s23-2.jpg"]
+    "thumbnails": [
+      "/img/samsung-s23-1.jpg",
+      "/img/samsung-s23-2.jpg"
+    ]
   },
   {
     "id": 2,
@@ -19,7 +22,9 @@
     "status": true,
     "stock": 15,
     "category": "Computadoras",
-    "thumbnails": ["/img/msi-laptop-1.jpg"]
+    "thumbnails": [
+      "/img/msi-laptop-1.jpg"
+    ]
   },
   {
     "id": 3,
@@ -30,17 +35,9 @@
     "status": true,
     "stock": 30,
     "category": "Audio",
-    "thumbnails": ["/img/sony-headphones-1.jpg", "/img/sony-headphones-2.jpg"]
-  },
-  {
-    "id": 4,
-    "title": "Auri",
-    "description": "Doble diadema",
-    "code": "hhasd44",
-    "price": 20,
-    "status": true,
-    "stock": 15,
-    "category": "asd",
-    "thumbnails": []
+    "thumbnails": [
+      "/img/sony-headphones-1.jpg",
+      "/img/sony-headphones-2.jpg"
+    ]
   }
 ]

@@ -1,4 +1,4 @@
-// Middlewares de validación con seguridad mejorada
+// Middlewares de validación con seguridad
 
 // Función para sanitizar strings y prevenir XSS
 const sanitizeString = (input, fieldName, minLength = 1, maxLength = 500) => {
