@@ -1,82 +1,97 @@
-# 🛒 E-commerce Backend - Entrega 2
+# Tienda Virtual Backend - Segunda Entrega
 
-Aplicación backend desarrollada con **Node.js**, **Express** y **WebSockets** para gestión de productos en tiempo real.
+Proyecto de backend para manejo de productos y carritos desarrollado con Node.js, Express y WebSockets. Incluye funcionalidad en tiempo real para la gestión de inventario.
 
-## 🚀 Características
+## ¿Qué hace esta aplicación?
 
-- **API REST** completa para productos y carritos
-- **WebSockets** para actualizaciones en tiempo real
-- **Handlebars** como motor de plantillas
-- **Arquitectura modular** con controladores y DAOs
-- **Persistencia** en archivos JSON
-- **Bootstrap 5** para interfaz responsive
+Esta aplicación permite gestionar una tienda virtual con productos y carritos de compra. Los usuarios pueden ver productos, crear carritos y agregar items. Todo funciona en tiempo real gracias a WebSockets, así que si alguien agrega o elimina un producto, todos los usuarios conectados lo ven al instante.
 
-## 📦 Instalación
+## Instalación y uso
+
+Para usar este proyecto necesitas tener Node.js instalado en tu computadora.
 
 ```bash
-# Clonar repositorio
-git clone <url-repositorio>
+# Descargar el proyecto
+git clone https://github.com/FranciscoHaro25/backend-entrega-2-francisco-haro.git
 
-# Instalar dependencias
+# Entrar a la carpeta
+cd entrega-1
+
+# Instalar las dependencias
 npm install
 
-# Configurar variables de entorno
-cp .env.example .env
-
-# Iniciar servidor
+# Ejecutar el servidor
 npm start
 ```
 
-## 🛠️ Scripts Disponibles
+Después de esto, abre tu navegador y ve a `http://localhost:3000`
 
-- `npm start` - Ejecutar en producción
-- `npm run dev` - Desarrollo con hot reload
+## Comandos disponibles
 
-## 📁 Estructura del Proyecto
+- `npm start` - Inicia el servidor normal
+- `npm run dev` - Inicia el servidor con recarga automática (para desarrollo)
+
+## Cómo está organizado el código
+
+El proyecto sigue una estructura modular para mantener todo ordenado:
 
 ```
 src/
-├── controllers/     # Lógica de negocio
-├── routes/         # Definición de rutas
-├── dao/           # Acceso a datos
-├── views/         # Plantillas Handlebars
-├── sockets/       # Configuración WebSocket
-└── config/        # Variables de entorno
+├── controllers/     # Aquí van las funciones que manejan las peticiones
+├── services/       # Lógica de negocio separada
+├── routes/         # Definición de las rutas de la API
+├── dao/           # Managers que guardan y leen datos del JSON
+├── views/         # Plantillas HTML con Handlebars
+├── sockets/       # Configuración de WebSockets
+├── middlewares/   # Validaciones y seguridad
+└── config/        # Configuración general
 ```
 
-## 🌐 Endpoints
+## Endpoints de la API
 
-### Productos
+### Para productos:
 
-- `GET /api/products` - Listar productos
-- `GET /api/products/:id` - Obtener producto
-- `POST /api/products` - Crear producto
-- `PUT /api/products/:id` - Actualizar producto
-- `DELETE /api/products/:id` - Eliminar producto
+- `GET /api/products` - Ver todos los productos (opcional: ?limit=10)
+- `GET /api/products/:id` - Ver un producto específico
+- `POST /api/products` - Crear producto nuevo
+- `PUT /api/products/:id` - Modificar un producto
+- `DELETE /api/products/:id` - Borrar producto
 
-### Carritos
+### Para carritos:
 
-- `POST /api/carts` - Crear carrito
-- `GET /api/carts/:id` - Obtener carrito
-- `POST /api/carts/:cid/product/:pid` - Agregar producto
+- `POST /api/carts` - Crear un carrito vacío
+- `GET /api/carts/:id` - Ver qué hay en un carrito
+- `POST /api/carts/:cid/product/:pid` - Meter un producto al carrito
 
-### Vistas
+### Páginas web:
 
-- `/` - Página principal
-- `/realtimeproducts` - Gestión en tiempo real
+- `/` - Página principal con lista de productos
+- `/realtimeproducts` - Página para administrar productos en tiempo real
 
-## 🔧 Tecnologías
+## Tecnologías usadas
 
-- **Node.js** v18+
-- **Express.js** 5.x
-- **Socket.IO** 4.x
-- **Handlebars** 8.x
-- **Bootstrap** 5.x
+- **Node.js** - Para el servidor
+- **Express** - Framework web
+- **Socket.IO** - Para funcionalidad en tiempo real
+- **Handlebars** - Para las vistas HTML
+- **Bootstrap** - Para que se vea bonito
+- **JSON** - Para guardar los datos
 
-## 👨‍💻 Autor
+## Funcionamiento en tiempo real
 
-**Francisco Haro** - Estudiante Coderhouse Backend
+La aplicación usa WebSockets para mantener sincronizados a todos los usuarios. Cuando alguien:
+
+- Agrega un producto nuevo
+- Elimina un producto
+- Modifica el inventario
+
+Todos los demás usuarios ven el cambio inmediatamente sin recargar la página.
+
+## Autor
+
+Francisco Haro  
+Estudiante del curso de Desarrollo Backend - Coderhouse
 
 ---
 
-> Proyecto desarrollado para la **Entrega 2** del curso de Backend en Coderhouse
+_Este proyecto fue desarrollado como parte de la segunda entrega del curso de Backend en Coderhouse_

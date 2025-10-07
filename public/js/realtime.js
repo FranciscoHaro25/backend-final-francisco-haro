@@ -1,5 +1,4 @@
 // Script para manejar WebSockets en tiempo real
-// Francisco Haro - Entrega 2
 
 const socket = io();
 

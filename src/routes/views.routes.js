@@ -1,5 +1,5 @@
 // Router para las vistas del frontend
-// Se encarga de renderizar las páginas principales con Handlebars
+
 const express = require("express");
 const viewController = require("../controllers/view.controller");
 
