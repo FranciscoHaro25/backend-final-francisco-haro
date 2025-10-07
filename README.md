@@ -15,7 +15,7 @@ Para usar este proyecto necesitas tener Node.js instalado en tu computadora.
 git clone https://github.com/FranciscoHaro25/backend-entrega-2-francisco-haro.git
 
 # Entrar a la carpeta
-cd entrega-1
+cd entrega-2
 
 # Instalar las dependencias
 npm install

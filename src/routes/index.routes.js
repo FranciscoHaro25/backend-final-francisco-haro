@@ -8,7 +8,7 @@ const router = express.Router();
 // Endpoint raíz de la API
 router.get("/", (req, res) => {
   res.json({
-    name: "entrega-1",
+    name: "entrega-2",
     version: "v1",
     description: "API de productos y carritos con Socket.IO",
     endpoints: {
