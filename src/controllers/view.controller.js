@@ -1,13 +1,13 @@
-const ProductManager = require("../dao/productManager");
+const ProductService = require("../services/product.service");
 
-// Instancia para manejar productos en vistas
-const productManager = new ProductManager();
+// Instancia del servicio de productos
+const productService = new ProductService();
 
 class ViewController {
   // Renderizar página principal
   async renderHome(req, res) {
     try {
-      const products = await productManager.getProducts();
+      const products = await productService.list({});
       res.render("home", {
         title: "Mi Tienda - Home",
         products,
@@ -26,14 +26,14 @@ class ViewController {
   // Renderizar vista de productos en tiempo real
   async renderRealTimeProducts(req, res) {
     try {
-      const products = await productManager.getProducts();
+      const products = await productService.list({});
       res.render("realTimeProducts", {
-        title: "Productos en Tiempo Real",
+        title: "Mi Tienda - Productos en Tiempo Real",
         products,
         hasProducts: products.length > 0,
       });
     } catch (error) {
-      console.error("Error al cargar vista tiempo real:", error);
+      console.error("Error al cargar vista realTimeProducts:", error);
       res.status(500).render("error", {
         title: "Error",
         message: "Error al cargar productos en tiempo real",

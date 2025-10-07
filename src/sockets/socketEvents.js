@@ -1,4 +1,6 @@
-const ProductManager = require("../dao/productManager");
+// Configuración de eventos de WebSocket para funcionalidad en tiempo real
+// Maneja las conexiones de socket y los eventos de productos
+const ProductService = require("../services/product.service");
 const {
   socketLogger,
   socketValidateProduct,
@@ -7,33 +9,33 @@ const {
   socketAuth,
 } = require("../middlewares/socketSecurity");
 
-const productManager = new ProductManager();
+const productService = new ProductService();
 
-// Configurar eventos de WebSocket con seguridad
+// Función principal que configura todos los eventos de WebSocket
 const configureSocket = (io) => {
-  // Middleware de autenticación para todas las conexiones
+  // Aplicamos middleware de autenticación a todas las conexiones
   io.use(socketAuth);
 
   io.on("connection", (socket) => {
     socketLogger("connection", { socketId: socket.id }, socket);
 
-    // Enviar productos al conectarse
+    // Cuando alguien se conecta, le enviamos la lista actual de productos
     loadAndSendProducts(socket);
 
-    // Manejar creación de productos con validaciones de seguridad
+    // Escuchamos cuando el cliente quiere crear un producto nuevo
     socket.on("newProduct", async (productData) => {
       try {
-        // Logging del evento
+        // Registramos el evento para auditoria
         socketLogger("newProduct", productData, socket);
 
-        // Validar y sanitizar datos del producto
+        // Validamos que los datos del producto sean seguros
         const validatedProduct = socketValidateProduct(productData, socket);
 
-        // Crear producto con datos seguros
-        await productManager.addProduct(validatedProduct);
+        // Creamos el producto y notificamos a todos los clientes conectados
+        await productService.create(validatedProduct);
         await broadcastProducts(io);
 
-        // Log de éxito
+        // Confirmamos que todo salió bien en los logs
         console.log(
           `[${new Date().toISOString()}] Producto creado exitosamente via Socket.IO`
         );
@@ -42,16 +44,16 @@ const configureSocket = (io) => {
       }
     });
 
-    // Manejar eliminación de productos con validaciones de seguridad
+    // Escuchamos cuando el cliente quiere eliminar un producto
     socket.on("deleteProduct", async (productId) => {
       try {
-        // Logging del evento
+        // Guardamos el evento en los logs
         socketLogger("deleteProduct", { productId }, socket);
 
         // Validar ID con rate limiting y sanitización
         const validatedId = socketValidateProductId(productId, socket);
 
-        await productManager.deleteProduct(validatedId);
+        await productService.remove(validatedId);
         await broadcastProducts(io);
 
         // Log de éxito
@@ -72,7 +74,7 @@ const configureSocket = (io) => {
 // Función auxiliar para cargar y enviar productos a un socket específico
 const loadAndSendProducts = async (socket) => {
   try {
-    const products = await productManager.getProducts();
+    const products = await productService.list({});
     socket.emit("updateProducts", products);
   } catch (error) {
     socket.emit("error", { message: "Error al cargar productos" });
@@ -82,7 +84,7 @@ const loadAndSendProducts = async (socket) => {
 // Función auxiliar para enviar productos a todos los clientes conectados
 const broadcastProducts = async (io) => {
   try {
-    const products = await productManager.getProducts();
+    const products = await productService.list({});
     io.emit("updateProducts", products);
   } catch (error) {
     console.error("Error al enviar productos:", error);

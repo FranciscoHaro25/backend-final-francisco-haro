@@ -1,7 +1,8 @@
 const fs = require("fs").promises;
 const path = require("path");
 
-// Funciones de validación
+// Funciones auxiliares para validar los datos que llegan del formulario
+// Estas funciones se encargan de convertir y validar tipos de datos
 const toInt = (v, field) => {
   const n = Number.parseInt(v, 10);
   if (!Number.isFinite(n)) throw new Error(`Campo ${field} debe ser entero`);
@@ -27,23 +28,28 @@ const ensureThumbs = (val) => {
   return val.map(String);
 };
 
+// Administrador de productos - maneja la persistencia de productos en JSON
+// Este manager se encarga de todas las operaciones CRUD con productos
 class ProductManager {
   constructor() {
     this.path = path.join(__dirname, "../../data/products.json");
+    // Cola para evitar problemas de concurrencia en las operaciones de archivo
     this._queue = Promise.resolve();
   }
 
+  // M\u00e9todo para poner las operaciones en cola y evitar conflictos
   enqueue(fn) {
     this._queue = this._queue.then(fn, fn);
     return this._queue;
   }
 
-  // Leer archivo de productos
+  // Lee todos los productos del archivo JSON
   async readProducts() {
     try {
       const data = await fs.readFile(this.path, "utf-8");
       return JSON.parse(data);
     } catch (error) {
+      // Si el archivo no existe todavía, devolvemos un array vacío
       if (error.code === "ENOENT") {
         return [];
       }
@@ -51,6 +57,7 @@ class ProductManager {
     }
   }
 
+  // Escribe la lista de productos actualizada en el archivo
   async writeProducts(products) {
     try {
       await fs.writeFile(this.path, JSON.stringify(products, null, 2));
@@ -59,10 +66,12 @@ class ProductManager {
     }
   }
 
+  // Obtiene todos los productos, con opción de limitar la cantidad
   async getProducts(limit) {
     try {
       const products = await this.readProducts();
       const n = Number.parseInt(limit, 10);
+      // Si se especifica un límite válido, devolvemos solo esa cantidad
       if (Number.isFinite(n) && n > 0) {
         return products.slice(0, n);
       }
@@ -72,6 +81,7 @@ class ProductManager {
     }
   }
 
+  // Busca un producto específico por su ID
   async getProductById(id) {
     try {
       const products = await this.readProducts();
@@ -82,9 +92,11 @@ class ProductManager {
     }
   }
 
+  // Agrega un producto nuevo después de validar todos los campos requeridos
   async addProduct(productData) {
     return this.enqueue(async () => {
       try {
+        // Validamos y limpiamos todos los campos obligatorios
         const title = ensureString(productData.title, "title");
         const description = ensureString(
           productData.description,
@@ -99,12 +111,12 @@ class ProductManager {
 
         const products = await this.readProducts();
 
-        // Verificar código único
+        // Revisamos que no exista otro producto con el mismo código
         if (products.some((p) => p.code === code)) {
           throw new Error(`El código ${code} ya existe`);
         }
 
-        // Generar ID incremental
+        // Calculamos el siguiente ID disponible
         const newId =
           products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
 
@@ -129,6 +141,7 @@ class ProductManager {
     });
   }
 
+  // Actualiza un producto existente con los nuevos datos proporcionados
   async updateProduct(id, updateData) {
     return this.enqueue(async () => {
       try {
@@ -138,10 +151,10 @@ class ProductManager {
           throw new Error("Producto no encontrado");
         }
 
-        // No permitir cambiar ID
+        // El ID no se puede cambiar, lo eliminamos de los datos
         delete updateData.id;
 
-        // Validar code único si se actualiza
+        // Si se quiere cambiar el código, verificamos que sea único
         if (updateData.code !== undefined) {
           const newCode = ensureString(updateData.code, "code");
           const existingProduct = products.find(

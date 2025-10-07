@@ -1,12 +1,13 @@
-// Middlewares de validación con seguridad
+// Middleware de validación para proteger la aplicación de datos incorrectos
+// Incluye validaciones específicas para productos, carritos y seguridad básica
 
-// Función para sanitizar strings y prevenir XSS
+// Función que limpia y valida strings para evitar ataques XSS básicos
 const sanitizeString = (input, fieldName, minLength = 1, maxLength = 500) => {
   if (typeof input !== "string") {
     throw new Error(`${fieldName} debe ser una cadena de texto`);
   }
 
-  // Limpiar caracteres peligrosos y HTML
+  // Eliminamos HTML y caracteres que podrían ser peligrosos
   const cleaned = input
     .trim()
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
@@ -21,7 +22,7 @@ const sanitizeString = (input, fieldName, minLength = 1, maxLength = 500) => {
   return cleaned;
 };
 
-// Función para validar números con rangos
+// Función para verificar que los números estén en rangos aceptables
 const validateNumber = (input, fieldName, min = 0, max = 999999999) => {
   const num = Number(input);
 
@@ -36,16 +37,17 @@ const validateNumber = (input, fieldName, min = 0, max = 999999999) => {
   return num;
 };
 
-// Rate limiting para API HTTP
+// Sistema de control de velocidad para evitar spam de peticiones
 const createRateLimit = () => {
   const clients = new Map();
-  const maxRequests = 30; // máximo 30 peticiones
-  const windowTime = 60000; // en 1 minuto
+  const maxRequests = 30; // máximo 30 peticiones por cliente
+  const windowTime = 60000; // ventana de tiempo de 1 minuto
 
   return (req, res, next) => {
     const clientIp = req.ip || req.connection.remoteAddress;
     const now = Date.now();
 
+    // Si es la primera vez que vemos esta IP, la registramos
     if (!clients.has(clientIp)) {
       clients.set(clientIp, { count: 1, resetTime: now + windowTime });
       return next();
@@ -53,12 +55,14 @@ const createRateLimit = () => {
 
     const client = clients.get(clientIp);
 
+    // Si ya paso el tiempo límite, reiniciamos el contador
     if (now >= client.resetTime) {
       client.count = 1;
       client.resetTime = now + windowTime;
       return next();
     }
 
+    // Si el cliente ya excedió el límite, lo bloqueamos
     if (client.count >= maxRequests) {
       return res.status(429).json({
         error: "Demasiadas peticiones",

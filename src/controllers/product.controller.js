@@ -1,16 +1,18 @@
-const ProductManager = require("../dao/productManager");
+// Controller de productos - Maneja las peticiones HTTP
+// Francisco Haro - Backend Express con servicios
 
-// Instancia para manejar productos
-const productManager = new ProductManager();
+const ProductService = require("../services/product.service");
+
+const productService = new ProductService();
 
 class ProductController {
-  // Obtener lista de productos
+  // Endpoint para obtener productos con opción de límite
   async getProducts(req, res) {
     try {
       const { limit } = req.query;
-      const products = await productManager.getProducts(
-        limit ? parseInt(limit) : undefined
-      );
+      const products = await productService.list({
+        limit: limit ? parseInt(limit) : undefined,
+      });
       res.json(products);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -21,16 +23,16 @@ class ProductController {
     }
   }
 
-  // Obtener producto por ID
+  // Buscar un producto específico por su ID
   async getProductById(req, res) {
     try {
-      const product = await productManager.getProductById(req.params.pid);
-      if (!product) {
-        return res.status(404).json({ error: "Producto no encontrado" });
-      }
+      const product = await productService.getById(req.params.pid);
       res.json(product);
     } catch (error) {
       console.error("Error al obtener producto:", error);
+      if (error.message === "Producto no encontrado") {
+        return res.status(404).json({ error: error.message });
+      }
       res.status(500).json({
         error: "Error del servidor",
         message: error.message,
@@ -38,15 +40,16 @@ class ProductController {
     }
   }
 
-  // Crear nuevo producto
+  // Crear un nuevo producto y notificar via WebSocket
   async createProduct(req, res, next) {
     try {
-      const newProduct = await productManager.addProduct(req.body);
+      const newProduct = await productService.create(req.body);
 
-      // Notificar cambios a clientes conectados via Socket.IO
-      if (req.io) {
-        const products = await productManager.getProducts();
-        req.io.emit("updateProducts", products);
+      // Enviar actualización a todos los clientes conectados
+      const io = req.app.get("io");
+      if (io) {
+        const products = await productService.list({});
+        io.emit("updateProducts", products);
       }
 
       res.status(201).json({
@@ -58,18 +61,19 @@ class ProductController {
     }
   }
 
-  // Actualizar producto
+  // Modificar un producto existente
   async updateProduct(req, res) {
     try {
-      const updatedProduct = await productManager.updateProduct(
+      const updatedProduct = await productService.update(
         req.params.pid,
         req.body
       );
 
-      // Emitir evento WebSocket para tiempo real
-      if (req.app && req.app.locals.io) {
-        const products = await productManager.getProducts();
-        req.app.locals.io.emit("updateProducts", products);
+      // Actualizar la lista en tiempo real
+      const io = req.app.get("io");
+      if (io) {
+        const products = await productService.list({});
+        io.emit("updateProducts", products);
       }
 
       res.json({
@@ -85,15 +89,16 @@ class ProductController {
     }
   }
 
-  // Eliminar producto
+  // Eliminar un producto del catálogo
   async deleteProduct(req, res) {
     try {
-      const deletedProduct = await productManager.deleteProduct(req.params.pid);
+      const deletedProduct = await productService.remove(req.params.pid);
 
-      // Emitir evento WebSocket para tiempo real
-      if (req.app && req.app.locals.io) {
-        const products = await productManager.getProducts();
-        req.app.locals.io.emit("updateProducts", products);
+      // Notificar a todos los clientes la eliminación
+      const io = req.app.get("io");
+      if (io) {
+        const products = await productService.list({});
+        io.emit("updateProducts", products);
       }
 
       res.json({

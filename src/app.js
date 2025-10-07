@@ -1,19 +1,21 @@
+// Configuración principal de Express
+// Francisco Haro - Entrega Backend
+
 const express = require("express");
 const { engine } = require("express-handlebars");
 const path = require("path");
 
-// Importar middlewares
+// Importar middlewares personalizados
 const logger = require("./middlewares/logger");
 const errorHandler = require("./middlewares/errorHandler");
 
-// Importar routers
-const productsRouter = require("./routes/productsRouter");
-const cartsRouter = require("./routes/cartsRouter");
-const viewsRouter = require("./routes/viewsRouter");
+// Importar las rutas del proyecto
+const apiRoutes = require("./routes/index.routes");
+const viewsRouter = require("./routes/views.routes");
 
 const app = express();
 
-// Configurar Handlebars
+// Configuración del motor de plantillas Handlebars
 app.engine(
   "handlebars",
   engine({
@@ -24,18 +26,17 @@ app.engine(
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
-// Middlewares
+// Configuración de middlewares principales
 app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
 
-// Rutas API
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
+// Configuración de rutas
+app.use("/api", apiRoutes);
 app.use("/", viewsRouter);
 
-// Middleware de manejo de errores (debe ir al final)
+// El middleware de errores siempre va al final
 app.use(errorHandler);
 
 module.exports = app;
