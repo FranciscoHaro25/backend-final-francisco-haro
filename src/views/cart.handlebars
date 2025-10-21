@@ -1,0 +1,204 @@
+<div class="row">
+  <div class="col-12">
+    <h1>Carrito de Compras</h1>
+    <p class="text-muted">ID del carrito: {{cartId}}</p>
+  </div>
+</div>
+
+{{#if hasProducts}}
+<!-- Resumen del carrito -->
+{{#if cart.summary}}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card bg-light">
+      <div class="card-body">
+        <h5 class="card-title">Resumen del Carrito</h5>
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Total de productos:</strong> {{cart.summary.productCount}}
+          </div>
+          <div class="col-md-3">
+            <strong>Cantidad de artículos:</strong> {{cart.summary.totalItems}}
+          </div>
+          <div class="col-md-6">
+            <strong>Total a pagar:</strong> 
+            <span class="text-success fs-5">${{cart.summary.total}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}
+
+<!-- Productos en el carrito -->
+<div class="row">
+  <div class="col-12">
+    <h3>Productos en el carrito</h3>
+  </div>
+</div>
+
+<div class="row">
+  {{#each cart.products}}
+    <div class="col-12 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <!-- Información del producto -->
+            <div class="col-md-6">
+              {{#if this.product}}
+                <h5 class="card-title">{{this.product.title}}</h5>
+                <p class="card-text text-muted">{{this.product.description}}</p>
+                <p class="small">
+                  <strong>Categoría:</strong> {{this.product.category}} | 
+                  <strong>Stock disponible:</strong> {{this.product.stock}}
+                </p>
+              {{else}}
+                <h5 class="card-title text-danger">Producto no disponible</h5>
+                <p class="text-muted">Este producto ya no está disponible</p>
+              {{/if}}
+            </div>
+            
+            <!-- Cantidad y precio -->
+            <div class="col-md-3 text-center">
+              {{#if this.product}}
+                <p class="mb-1"><strong>Precio unitario:</strong></p>
+                <h6 class="text-success">${{this.product.price}}</h6>
+                <p class="mb-1"><strong>Cantidad:</strong></p>
+                <span class="badge bg-primary fs-6">{{this.quantity}}</span>
+              {{/if}}
+            </div>
+            
+            <!-- Total y acciones -->
+            <div class="col-md-3 text-center">
+              {{#if this.product}}
+                <p class="mb-1"><strong>Subtotal:</strong></p>
+                <h5 class="text-success">${{multiply this.product.price this.quantity}}</h5>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-sm btn-outline-primary" 
+                          onclick="updateQuantity('{{../cartId}}', '{{this.product._id}}', {{this.quantity}})">
+                    Editar
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" 
+                          onclick="removeProduct('{{../cartId}}', '{{this.product._id}}')">
+                    Eliminar
+                  </button>
+                </div>
+              {{else}}
+                <button type="button" class="btn btn-sm btn-outline-danger" 
+                        onclick="removeProduct('{{../cartId}}', '{{this.product}}')">
+                  Eliminar producto no disponible
+                </button>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
+
+<!-- Acciones del carrito -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="d-flex justify-content-between">
+      <div>
+        <a href="/" class="btn btn-outline-primary">Seguir comprando</a>
+        <button type="button" class="btn btn-outline-warning" onclick="clearCart('{{cartId}}')">
+          Vaciar carrito
+        </button>
+      </div>
+      <div>
+        {{#if cart.summary}}
+        <button type="button" class="btn btn-success btn-lg">
+          Proceder al pago - ${{cart.summary.total}}
+        </button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{else}}
+<!-- Carrito vacío -->
+<div class="row">
+  <div class="col-12">
+    <div class="alert alert-info text-center">
+      <h4>Tu carrito está vacío</h4>
+      <p>¡Agrega algunos productos para comenzar a comprar!</p>
+      <a href="/" class="btn btn-primary">Ver productos</a>
+    </div>
+  </div>
+</div>
+{{/if}}
+
+<!-- JavaScript para funcionalidades del carrito -->
+<script>
+// Actualizar cantidad de producto
+function updateQuantity(cartId, productId, currentQuantity) {
+  const newQuantity = prompt('Nueva cantidad:', currentQuantity);
+  if (newQuantity && newQuantity > 0) {
+    fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quantity: parseInt(newQuantity) })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.message);
+      } else {
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al actualizar cantidad');
+    });
+  }
+}
+
+// Eliminar producto del carrito
+function removeProduct(cartId, productId) {
+  if (confirm('¿Estás seguro de que quieres eliminar este producto del carrito?')) {
+    fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.message);
+      } else {
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al eliminar producto');
+    });
+  }
+}
+
+// Vaciar carrito completo
+function clearCart(cartId) {
+  if (confirm('¿Estás seguro de que quieres vaciar todo el carrito?')) {
+    fetch(`/api/carts/${cartId}`, {
+      method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.message);
+      } else {
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al vaciar carrito');
+    });
+  }
+}
+</script>

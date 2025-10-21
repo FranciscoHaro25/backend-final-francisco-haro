@@ -21,8 +21,12 @@ const configureSocket = (io) => {
       try {
         socketLogger("newProduct", productData, socket);
         const validatedProduct = socketValidateProduct(productData, socket);
-        await productService.create(validatedProduct);
+        const newProduct = await productService.create(validatedProduct);
         await ProductController.broadcastProductUpdate(io);
+
+        // Emitir evento de éxito
+        socket.emit("productAdded", newProduct);
+
         console.log(
           `[${new Date().toISOString()}] Producto creado via Socket.IO`
         );
@@ -35,8 +39,12 @@ const configureSocket = (io) => {
       try {
         socketLogger("deleteProduct", { productId }, socket);
         const validatedId = socketValidateProductId(productId, socket);
-        await productService.remove(validatedId);
+        const deletedProduct = await productService.remove(validatedId);
         await ProductController.broadcastProductUpdate(io);
+
+        // Emitir evento de éxito
+        socket.emit("productDeleted", deletedProduct);
+
         console.log(
           `[${new Date().toISOString()}] Producto eliminado via Socket.IO`
         );
@@ -53,7 +61,9 @@ const configureSocket = (io) => {
 
 const loadAndSendProducts = async (socket) => {
   try {
-    const products = await productService.list({});
+    const result = await productService.list({});
+    // Extraer productos según el formato de respuesta
+    const products = result.docs || result;
     socket.emit("updateProducts", products);
   } catch (error) {
     socket.emit("error", { message: "Error al cargar productos" });

@@ -5,14 +5,64 @@ const productService = new ProductService();
 class ProductController {
   async getProducts(req, res) {
     try {
-      const { limit } = req.query;
-      const products = await productService.list({
-        limit: limit ? parseInt(limit) : undefined,
-      });
-      res.json(products);
+      const {
+        limit = 10,
+        page = 1,
+        sort,
+        query,
+        category,
+        availability,
+      } = req.query;
+      const options = {
+        limit: Math.min(parseInt(limit), 50),
+        page: parseInt(page),
+        sort,
+        query,
+        category,
+        availability:
+          availability === "true"
+            ? true
+            : availability === "false"
+            ? false
+            : undefined,
+      };
+
+      // Obtener productos con paginación
+      const result = await productService.list(options);
+
+      // Construir URLs para navegación
+      const baseUrl = `${req.protocol}://${req.get("host")}${req.path}`;
+
+      // Crear enlaces de navegación
+      const buildLink = (newPage) => {
+        const queryParams = new URLSearchParams(req.query);
+        queryParams.set("page", newPage);
+        return `${baseUrl}?${queryParams.toString()}`;
+      };
+
+      // Respuesta en formato requerido
+      const response = {
+        status: "success",
+        payload: result.docs || result, // Para compatibilidad con sistemas sin paginación
+        totalPages: result.totalPages || 1,
+        prevPage: result.hasPrevPage ? result.prevPage : null,
+        nextPage: result.hasNextPage ? result.nextPage : null,
+        page: result.page || 1,
+        hasPrevPage: result.hasPrevPage || false,
+        hasNextPage: result.hasNextPage || false,
+        prevLink: result.hasPrevPage ? buildLink(result.prevPage) : null,
+        nextLink: result.hasNextPage ? buildLink(result.nextPage) : null,
+        totalDocs:
+          result.totalDocs || (Array.isArray(result) ? result.length : 0),
+        limit: result.limit || limit,
+        pagingCounter: result.pagingCounter || 1,
+      };
+
+      res.json(response);
     } catch (error) {
       console.error("Error al obtener productos:", error);
       res.status(500).json({
+        status: "error",
         error: "Error del servidor",
         message: error.message,
       });
@@ -103,7 +153,9 @@ class ProductController {
   async broadcastProductUpdate(io) {
     try {
       if (io) {
-        const products = await productService.list({});
+        const result = await productService.list({});
+        // Extraer productos según el formato de respuesta
+        const products = result.docs || result;
         io.emit("updateProducts", products);
         console.log(
           `[${new Date().toISOString()}] Productos actualizados via WebSocket`

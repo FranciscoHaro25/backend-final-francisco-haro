@@ -7,6 +7,7 @@ const app = require("./app");
 const { configureSocket } = require("./sockets/socketEvents");
 const { createRateLimit } = require("./middlewares/validation");
 const { port } = require("./config/config");
+const DAOFactory = require("./dao/factory.dao");
 
 // Crear el servidor HTTP usando Express
 const server = createServer(app);
@@ -28,9 +29,28 @@ app.set("io", io);
 // Configurar los eventos de WebSocket
 configureSocket(io);
 
-// Levantar el servidor en el puerto especificado
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  console.log("Socket.IO configurado");
-});
+// Función principal para inicializar el servidor
+async function startServer() {
+  try {
+    // Inicializar la persistencia (MongoDB o FileSystem)
+    console.log("Inicializando persistencia...");
+    await DAOFactory.initializePersistence();
+
+    const persistenceInfo = DAOFactory.getPersistenceInfo();
+    console.log(`Persistencia configurada: ${persistenceInfo.description}`);
+
+    // Levantar el servidor en el puerto especificado
+    const PORT = process.env.PORT || 8080;
+    server.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      console.log("📡 Socket.IO configurado");
+      console.log("✅ Sistema listo para recibir peticiones");
+    });
+  } catch (error) {
+    console.error("❌ Error al inicializar el servidor:", error);
+    process.exit(1);
+  }
+}
+
+// Iniciar el servidor
+startServer();

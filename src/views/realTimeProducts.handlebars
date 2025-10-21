@@ -6,6 +6,14 @@
     <div id="connectionStatus" class="alert alert-warning">
       Conectando...
     </div>
+
+    <!-- Contenedor para notificaciones -->
+    <div
+      id="notificationContainer"
+      class="position-fixed top-0 end-0 p-3"
+      style="z-index: 1055; margin-top: 20px;"
+    >
+    </div>
   </div>
 </div>
 
@@ -19,46 +27,106 @@
       <div class="row">
         <div class="col-md-6">
           <div class="mb-3">
-            <label for="title" class="form-label">Título</label>
-            <input type="text" class="form-control" id="title" required />
+            <label for="title" class="form-label">Título
+              <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              required
+              minlength="3"
+              maxlength="100"
+            />
+            <div class="invalid-feedback"></div>
+            <div class="form-text">Entre 3 y 100 caracteres</div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="mb-3">
-            <label for="description" class="form-label">Descripción</label>
-            <input type="text" class="form-control" id="description" required />
+            <label for="description" class="form-label">Descripción
+              <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="description"
+              required
+              minlength="10"
+              maxlength="500"
+            />
+            <div class="invalid-feedback"></div>
+            <div class="form-text">Entre 10 y 500 caracteres</div>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="code" class="form-label">Código</label>
-            <input type="text" class="form-control" id="code" required />
+            <label for="code" class="form-label">Código
+              <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="code"
+              required
+              minlength="2"
+              maxlength="50"
+              pattern="[A-Za-z0-9._-]+"
+            />
+            <div class="invalid-feedback"></div>
+            <div class="form-text">Solo letras, números, puntos, guiones</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="price" class="form-label">Precio</label>
+            <label for="price" class="form-label">Precio
+              <span class="text-danger">*</span></label>
             <input
               type="number"
               class="form-control"
               id="price"
               step="0.01"
+              min="0.01"
+              max="999999"
               required
             />
+            <div class="invalid-feedback"></div>
+            <div class="form-text">Mínimo $0.01</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock" required />
+            <label for="stock" class="form-label">Stock
+              <span class="text-danger">*</span></label>
+            <input
+              type="number"
+              class="form-control"
+              id="stock"
+              required
+              min="0"
+              max="999999"
+            />
+            <div class="invalid-feedback"></div>
+            <div class="form-text">Número entero positivo</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="category" class="form-label">Categoría</label>
-            <input type="text" class="form-control" id="category" required />
+            <label for="category" class="form-label">Categoría
+              <span class="text-danger">*</span></label>
+            <select class="form-select" id="category" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="electronica">Electrónica</option>
+              <option value="ropa">Ropa</option>
+              <option value="hogar">Hogar</option>
+              <option value="deportes">Deportes</option>
+              <option value="libros">Libros</option>
+              <option value="juguetes">Juguetes</option>
+              <option value="belleza">Belleza</option>
+              <option value="automotriz">Automotriz</option>
+              <option value="jardin">Jardín</option>
+              <option value="mascotas">Mascotas</option>
+            </select>
+            <div class="invalid-feedback"></div>
           </div>
         </div>
       </div>

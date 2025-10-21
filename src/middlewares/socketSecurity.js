@@ -1,4 +1,5 @@
 // Middlewares avanzados para Socket.IO con validaciones de seguridad
+const { socketValidateProductId } = require("./idValidator");
 
 // Sanitizar y limpiar strings de entrada
 const sanitizeString = (input, fieldName) => {
@@ -209,21 +210,7 @@ const socketValidateProduct = (productData, socket) => {
 };
 
 // Validación de ID de producto
-const socketValidateProductId = (productId, socket) => {
-  // Rate limiting
-  socketRateLimit(socket, "deleteProduct");
-
-  if (!productId) {
-    throw new Error("ID de producto es requerido");
-  }
-
-  const id = parseInt(productId);
-  if (isNaN(id) || id <= 0) {
-    throw new Error("ID de producto debe ser un número entero positivo");
-  }
-
-  return id;
-};
+// Ahora se usa desde idValidator.js
 
 // Middleware para manejo de errores con información de seguridad
 const socketErrorHandler = (error, socket, eventName) => {

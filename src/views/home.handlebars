@@ -1,23 +1,94 @@
 <div class="row">
   <div class="col-12">
     <h1>Lista de Productos</h1>
-    <p class="text-muted">Vista estática de todos los productos</p>
+    <p class="text-muted">Vista de productos con paginación y filtros</p>
   </div>
 </div>
 
+<!-- Formulario de filtros -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Filtros</h5>
+        <form method="GET" action="/" class="row g-3">
+          <div class="col-md-3">
+            <label for="query" class="form-label">Búsqueda</label>
+            <input type="text" class="form-control" id="query" name="query" 
+                   value="{{filters.query}}" placeholder="Buscar productos...">
+          </div>
+          <div class="col-md-2">
+            <label for="category" class="form-label">Categoría</label>
+            <input type="text" class="form-control" id="category" name="category" 
+                   value="{{filters.category}}" placeholder="ej: smartphones">
+          </div>
+          <div class="col-md-2">
+            <label for="availability" class="form-label">Disponibilidad</label>
+            <select class="form-select" id="availability" name="availability">
+              <option value="">Todos</option>
+              <option value="true" {{#if (eq filters.availability "true")}}selected{{/if}}>Disponibles</option>
+              <option value="false" {{#if (eq filters.availability "false")}}selected{{/if}}>No disponibles</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="sort" class="form-label">Ordenar por precio</label>
+            <select class="form-select" id="sort" name="sort">
+              <option value="">Sin orden</option>
+              <option value="asc" {{#if (eq filters.sort "asc")}}selected{{/if}}>Menor a mayor</option>
+              <option value="desc" {{#if (eq filters.sort "desc")}}selected{{/if}}>Mayor a menor</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="limit" class="form-label">Productos por página</label>
+            <select class="form-select" id="limit" name="limit">
+              <option value="5" {{#if (eq pagination.limit 5)}}selected{{/if}}>5</option>
+              <option value="10" {{#if (eq pagination.limit 10)}}selected{{/if}}>10</option>
+              <option value="20" {{#if (eq pagination.limit 20)}}selected{{/if}}>20</option>
+            </select>
+          </div>
+          <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Información de resultados -->
+{{#if pagination}}
+<div class="row mb-3">
+  <div class="col-12">
+    <p class="text-muted">
+      Mostrando {{products.length}} de {{pagination.totalDocs}} productos 
+      (Página {{pagination.page}} de {{pagination.totalPages}})
+    </p>
+  </div>
+</div>
+{{/if}}
+
+<!-- Lista de productos -->
 <div class="row">
   {{#each products}}
     <div class="col-md-4 mb-4">
-      <div class="card">
+      <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">{{this.title}}</h5>
           <p class="card-text">{{this.description}}</p>
           <p class="text-muted">Código: {{this.code}}</p>
           <h6 class="text-success">${{this.price}}</h6>
-          <p class="small">Stock:
-            {{this.stock}}
-            | Categoría:
-            {{this.category}}</p>
+          <p class="small">
+            Stock: 
+            <span class="{{#if (gt this.stock 0)}}text-success{{else}}text-danger{{/if}}">
+              {{this.stock}}
+            </span>
+            | Categoría: {{this.category}}
+          </p>
+          {{#if (and this.status (gt this.stock 0))}}
+            <span class="badge bg-success">Disponible</span>
+          {{else}}
+            <span class="badge bg-secondary">No disponible</span>
+          {{/if}}
         </div>
       </div>
     </div>
@@ -25,9 +96,53 @@
     <div class="col-12">
       <div class="alert alert-info">
         <h4>No hay productos disponibles</h4>
-        <p>Agrega productos desde la
-          <a href="/realtimeproducts">vista en tiempo real</a>.</p>
+        <p>
+          {{#if (or filters.query filters.category (ne filters.availability ""))}}
+            No se encontraron productos con los filtros aplicados. 
+            <a href="/">Ver todos los productos</a>.
+          {{else}}
+            Agrega productos desde la <a href="/realtimeproducts">vista en tiempo real</a>.
+          {{/if}}
+        </p>
       </div>
     </div>
   {{/each}}
 </div>
+
+<!-- Paginación -->
+{{#if showPagination}}
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="Navegación de productos">
+      <ul class="pagination justify-content-center">
+        {{#if pagination.hasPrevPage}}
+          <li class="page-item">
+            <a class="page-link" href="{{pagination.prevLink}}">Anterior</a>
+          </li>
+        {{else}}
+          <li class="page-item disabled">
+            <span class="page-link">Anterior</span>
+          </li>
+        {{/if}}
+        
+        <!-- Páginas -->
+        {{#each (range 1 pagination.totalPages)}}
+          <li class="page-item {{#if (eq this ../pagination.page)}}active{{/if}}">
+            <a class="page-link" href="/?page={{this}}{{#if ../filters.query}}&query={{../filters.query}}{{/if}}{{#if ../filters.category}}&category={{../filters.category}}{{/if}}{{#if ../filters.availability}}&availability={{../filters.availability}}{{/if}}{{#if ../filters.sort}}&sort={{../filters.sort}}{{/if}}">{{this}}</a>
+          </li>
+        {{/each}}
+        
+        {{#if pagination.hasNextPage}}
+          <li class="page-item">
+            <a class="page-link" href="{{pagination.nextLink}}">Siguiente</a>
+          </li>
+        {{else}}
+          <li class="page-item disabled">
+            <span class="page-link">Siguiente</span>
+          </li>
+        {{/if}}
+      </ul>
+    </nav>
+  </div>
+</div>
+{{/if}}

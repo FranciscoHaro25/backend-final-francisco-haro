@@ -1,6 +1,6 @@
 {
-  "name": "entrega-2-websockets",
-  "version": "1.0.0",
+  "name": "entrega-final-backend",
+  "version": "2.0.0",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -10,15 +10,19 @@
     "backend",
     "express",
     "websockets",
-    "handlebars"
+    "handlebars",
+    "mongodb",
+    "mongoose"
   ],
   "author": "Francisco Haro",
   "license": "ISC",
-  "description": "Entrega 2 - Backend con WebSockets y Handlebars",
+  "description": "Entrega Final - Backend con MongoDB, paginación y gestión avanzada de carritos",
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
+    "mongoose": "^8.19.2",
+    "mongoose-paginate-v2": "^1.9.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   }
