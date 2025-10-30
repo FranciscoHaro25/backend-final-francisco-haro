@@ -136,17 +136,15 @@ const validateField = (field, showFeedback = true) => {
 
 // Eventos de conexión
 socket.on("connect", () => {
-  console.log("Conectado al servidor WebSocket");
   connectionStatus.className = "alert alert-success";
   connectionStatus.textContent = "Conectado - WebSocket activo";
   showNotification("Conectado exitosamente al servidor", "success", 3000);
 });
 
 socket.on("disconnect", () => {
-  console.log("Desconectado del servidor");
   connectionStatus.className = "alert alert-danger";
-  connectionStatus.textContent = "Desconectado - Reintentando conexión...";
-  showNotification("Conexión perdida. Reintentando...", "warning", 0);
+  connectionStatus.textContent = "Desconectado - Intentando reconectar...";
+  showNotification("Conexión perdida, reintentando...", "warning", 3000);
 });
 
 socket.on("connect_error", (error) => {
@@ -159,9 +157,8 @@ socket.on("connect_error", (error) => {
 // Eventos del servidor
 
 // Actualizar cuando cambian los productos
-socket.on("updateProducts", (products) => {
-  console.log("Productos actualizados:", products);
-  renderProducts(products);
+socket.on("products", (products) => {
+  renderProductList(products);
 });
 
 // Mostrar errores con el nuevo sistema de notificaciones
@@ -248,7 +245,6 @@ productForm.addEventListener("submit", (e) => {
     category: document.getElementById("category").value,
   };
 
-  console.log("Enviando producto:", productData);
   showNotification("Enviando producto...", "info", 3000);
 
   socket.emit("newProduct", productData);
@@ -263,47 +259,10 @@ productForm.addEventListener("submit", (e) => {
 
 // Eliminar producto
 function deleteProduct(productId) {
-  // Crear una modal de confirmación personalizada
-  const modalHtml = `
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirmar eliminación</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            ¿Estás seguro de que quieres eliminar este producto?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // Agregar modal al DOM temporalmente
-  document.body.insertAdjacentHTML("beforeend", modalHtml);
-  const modal = new bootstrap.Modal(document.getElementById("deleteModal"));
-
-  // Manejar confirmación
-  document.getElementById("confirmDelete").addEventListener("click", () => {
-    console.log("Eliminando producto:", productId);
-    showNotification("Eliminando producto...", "info", 3000);
+  if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
     socket.emit("deleteProduct", productId);
-    modal.hide();
-  });
-
-  // Limpiar modal del DOM cuando se cierre
-  document
-    .getElementById("deleteModal")
-    .addEventListener("hidden.bs.modal", () => {
-      document.getElementById("deleteModal").remove();
-    });
-
-  modal.show();
+    showNotification("Eliminando producto...", "warning", 3000);
+  }
 }
 
 // Renderizar productos en la vista
@@ -352,4 +311,4 @@ function escapeHtml(text) {
 // Hacer función global para los botones
 window.deleteProduct = deleteProduct;
 
-console.log("Cliente WebSocket inicializado");
+// Cliente WebSocket inicializado

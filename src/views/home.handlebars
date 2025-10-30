@@ -246,8 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Escuchar actualizaciones de stock después de compras
     socket.on('stockUpdated', function(data) {
-      console.log('Stock actualizado:', data);
-      
       // Mostrar notificación de actualización
       if (window.notifications) {
         window.notifications.success('Stock actualizado - Orden: ' + data.orderNumber);

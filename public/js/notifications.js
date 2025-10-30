@@ -135,4 +135,4 @@ window.showInfo = (message, duration, title) => {
   return window.notifications.info(message, duration, title);
 };
 
-console.log("Sistema de notificaciones global inicializado");
+// Sistema de notificaciones global inicializado
