@@ -70,7 +70,7 @@
 <!-- Lista de productos -->
 <div class="row">
   {{#each products}}
-    <div class="col-md-4 mb-4">
+    <div class="col-md-4 mb-4" data-product-id="{{this.id}}">
       <div class="card h-100">
         <div class="card-body">
           <h5 class="card-title">{{this.title}}</h5>
@@ -78,20 +78,23 @@
           <p class="text-muted">Código: {{this.code}}</p>
           <h6 class="text-success">${{this.price}}</h6>
           <p class="small">
-            Stock: 
-            <span class="{{#if (gt this.stock 0)}}text-success{{else}}text-danger{{/if}}">
-              {{this.stock}}
+            <span class="product-stock {{#if (gt this.stock 0)}}text-success{{else}}text-danger{{/if}}">
+              Stock: {{this.stock}}
             </span>
             | Categoría: {{this.category}}
           </p>
           {{#if (and this.status (gt this.stock 0))}}
             <span class="badge bg-success mb-2">Disponible</span>
             <br>
-            <button class="btn btn-primary btn-sm" onclick="addToCartFromHome('{{this.id}}')">
+            <button class="btn btn-primary btn-sm add-to-cart-btn" onclick="addToCartFromHome('{{this.id}}')">
               🛒 Agregar al carrito
             </button>
           {{else}}
             <span class="badge bg-secondary">No disponible</span>
+            <br>
+            <button class="btn btn-secondary btn-sm add-to-cart-btn" disabled>
+              Sin stock
+            </button>
           {{/if}}
         </div>
       </div>
@@ -235,4 +238,73 @@ function agregarAlCarrito(cartId, productId) {
     }
   });
 }
+
+// Configurar WebSocket para actualización de stock en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof io !== 'undefined') {
+    const socket = io();
+    
+    // Escuchar actualizaciones de stock después de compras
+    socket.on('stockUpdated', function(data) {
+      console.log('Stock actualizado:', data);
+      
+      // Mostrar notificación de actualización
+      if (window.notifications) {
+        window.notifications.success('Stock actualizado - Orden: ' + data.orderNumber);
+      }
+      
+      // Actualizar stock de productos específicos sin recargar toda la página
+      if (data.updatedProducts && data.updatedProducts.length > 0) {
+        data.updatedProducts.forEach(update => {
+          updateProductStock(update.productId, update.newStock);
+        });
+      }
+    });
+  }
+});
+
+// Función para actualizar el stock de un producto específico
+function updateProductStock(productId, newStock) {
+  // Buscar el elemento de stock del producto
+  const stockElements = document.querySelectorAll(`[data-product-id="${productId}"] .product-stock`);
+  
+  stockElements.forEach(element => {
+    if (element) {
+      element.textContent = `Stock: ${newStock}`;
+      
+      // Agregar clase de actualización visual
+      element.classList.add('stock-updated');
+      setTimeout(() => {
+        element.classList.remove('stock-updated');
+      }, 2000);
+    }
+  });
+  
+  // Actualizar botones de "Agregar al carrito" si el stock es 0
+  const addButtons = document.querySelectorAll(`[data-product-id="${productId}"] .add-to-cart-btn`);
+  addButtons.forEach(button => {
+    if (newStock <= 0) {
+      button.disabled = true;
+      button.textContent = 'Sin stock';
+      button.classList.add('btn-secondary');
+      button.classList.remove('btn-primary');
+    } else {
+      button.disabled = false;
+      button.textContent = 'Agregar al carrito';
+      button.classList.add('btn-primary');
+      button.classList.remove('btn-secondary');
+    }
+  });
+}
 </script>
+
+<!-- Estilos para la animación de actualización -->
+<style>
+.stock-updated {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+</style>

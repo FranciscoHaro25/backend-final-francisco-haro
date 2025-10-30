@@ -307,6 +307,15 @@ class CartController {
       // Vaciar el carrito después de la compra exitosa
       await cartService.clearCart(cid);
 
+      // Emitir evento WebSocket para actualizar stock en tiempo real
+      if (req.app.get("io")) {
+        req.app.get("io").emit("stockUpdated", {
+          message: "Stock actualizado después de compra",
+          updatedProducts: productUpdates,
+          orderNumber: orderNumber,
+        });
+      }
+
       res.json({
         message: "Compra procesada exitosamente",
         purchase: purchase,
