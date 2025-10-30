@@ -1,97 +1,112 @@
-# Tienda Virtual Backend - Segunda Entrega
+# Tienda Virtual Backend - Proyecto Final
 
-Proyecto de backend para manejo de productos y carritos desarrollado con Node.js, Express y WebSockets. Incluye funcionalidad en tiempo real para la gestión de inventario.
+Sistema de e-commerce backend desarrollado con Node.js, Express, MongoDB y WebSockets. Maneja productos, carritos de compra y procesos de compra con actualizaciones en tiempo real.
 
-## ¿Qué hace esta aplicación?
+## Funcionalidades principales
 
-Esta aplicación permite gestionar una tienda virtual con productos y carritos de compra. Los usuarios pueden ver productos, crear carritos y agregar items. Todo funciona en tiempo real gracias a WebSockets, así que si alguien agrega o elimina un producto, todos los usuarios conectados lo ven al instante.
+Esta aplicación permite gestionar una tienda online completa. Los usuarios pueden navegar productos con filtros avanzados, agregar items a su carrito y realizar compras. El sistema actualiza stock y estados en tiempo real usando WebSockets.
 
-## Instalación y uso
+## Instalación
 
-Para usar este proyecto necesitas tener Node.js instalado en tu computadora.
+Requisitos: Node.js y acceso a MongoDB Atlas.
 
 ```bash
-# Descargar el proyecto
-git clone https://github.com/FranciscoHaro25/backend-entrega-2-francisco-haro.git
+# Clonar repositorio
+git clone https://github.com/FranciscoHaro25/backend-final-francisco-haro.git
 
-# Entrar a la carpeta
-cd entrega-2
-
-# Instalar las dependencias
+# Instalar dependencias
+cd backend-final-francisco-haro
 npm install
 
-# Ejecutar el servidor
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de MongoDB
+
+# Iniciar servidor
 npm start
 ```
 
-Después de esto, abre tu navegador y ve a `http://localhost:3000`
+Acceder en: `http://localhost:3000`
 
-## Comandos disponibles
+## Scripts disponibles
 
-- `npm start` - Inicia el servidor normal
-- `npm run dev` - Inicia el servidor con recarga automática (para desarrollo)
+- `npm start` - Servidor de producción
+- `npm run dev` - Desarrollo con auto-reload
+- `npm run seed` - Poblar base de datos con productos de ejemplo
 
-## Cómo está organizado el código
-
-El proyecto sigue una estructura modular para mantener todo ordenado:
+## Arquitectura del proyecto
 
 ```
 src/
-├── controllers/     # Aquí van las funciones que manejan las peticiones
-├── services/       # Lógica de negocio separada
-├── routes/         # Definición de las rutas de la API
-├── dao/           # Managers que guardan y leen datos del JSON
-├── views/         # Plantillas HTML con Handlebars
-├── sockets/       # Configuración de WebSockets
-├── middlewares/   # Validaciones y seguridad
-└── config/        # Configuración general
+├── controllers/     # Controladores de rutas
+├── services/       # Lógica de negocio
+├── routes/         # Definición de endpoints
+├── dao/           # Capa de acceso a datos (MongoDB/FileSystem)
+├── models/        # Esquemas de MongoDB con Mongoose
+├── views/         # Templates Handlebars
+├── sockets/       # Configuración WebSocket
+├── middlewares/   # Validaciones y logging
+└── config/        # Configuración de base de datos
 ```
 
-## Endpoints de la API
+## API Endpoints
 
-### Para productos:
+### Productos
 
-- `GET /api/products` - Ver todos los productos (opcional: ?limit=10)
-- `GET /api/products/:id` - Ver un producto específico
-- `POST /api/products` - Crear producto nuevo
-- `PUT /api/products/:id` - Modificar un producto
-- `DELETE /api/products/:id` - Borrar producto
+- `GET /api/products` - Lista productos con paginación y filtros
+- `GET /api/products/:pid` - Obtener producto específico
+- `POST /api/products` - Crear producto
+- `PUT /api/products/:pid` - Actualizar producto
+- `DELETE /api/products/:pid` - Eliminar producto
 
-### Para carritos:
+### Carritos
 
-- `POST /api/carts` - Crear un carrito vacío
-- `GET /api/carts/:id` - Ver qué hay en un carrito
-- `POST /api/carts/:cid/product/:pid` - Meter un producto al carrito
+- `POST /api/carts` - Crear carrito
+- `GET /api/carts/:cid` - Obtener carrito con productos
+- `POST /api/carts/:cid/product/:pid` - Agregar producto
+- `PUT /api/carts/:cid/products/:pid` - Actualizar cantidad
+- `DELETE /api/carts/:cid/products/:pid` - Quitar producto
+- `DELETE /api/carts/:cid` - Vaciar carrito
+- `POST /api/carts/:cid/purchase` - Procesar compra
 
-### Páginas web:
+### Vistas
 
-- `/` - Página principal con lista de productos
-- `/realtimeproducts` - Página para administrar productos en tiempo real
+- `/` - Catálogo con paginación y filtros
+- `/carts/:cid` - Vista detallada del carrito
+- `/realtimeproducts` - Panel de administración
 
-## Tecnologías usadas
+## Tecnologías implementadas
 
-- **Node.js** - Para el servidor
-- **Express** - Framework web
-- **Socket.IO** - Para funcionalidad en tiempo real
-- **Handlebars** - Para las vistas HTML
-- **Bootstrap** - Para que se vea bonito
-- **JSON** - Para guardar los datos
+- **Node.js & Express** - Servidor web
+- **MongoDB & Mongoose** - Base de datos con ODM
+- **Socket.IO** - Comunicación en tiempo real
+- **Handlebars** - Motor de plantillas
+- **Bootstrap** - Framework CSS
+- **Mongoose Paginate** - Paginación avanzada
 
-## Funcionamiento en tiempo real
+## Características técnicas
 
-La aplicación usa WebSockets para mantener sincronizados a todos los usuarios. Cuando alguien:
+### Persistencia MongoDB
 
-- Agrega un producto nuevo
-- Elimina un producto
-- Modifica el inventario
+- Modelos con validaciones y middlewares
+- Referencias entre documentos con populate
+- Índices para optimización de consultas
+- Paginación nativa con mongoose-paginate-v2
 
-Todos los demás usuarios ven el cambio inmediatamente sin recargar la página.
+### WebSockets en tiempo real
+
+- Sincronización automática de stock después de compras
+- Actualizaciones de carrito entre sesiones
+- Notificaciones instantáneas de cambios
+
+### Sistema de filtros
+
+- Búsqueda por texto, categoría y disponibilidad
+- Ordenamiento por precio (ascendente/descendente)
+- Paginación con navegación completa
+- URLs amigables con parámetros de query
 
 ## Autor
 
 Francisco Haro  
-Estudiante del curso de Desarrollo Backend - Coderhouse
-
----
-
-_Este proyecto fue desarrollado como parte de la segunda entrega del curso de Backend en Coderhouse_
+Curso Backend I - Coderhouse 2025

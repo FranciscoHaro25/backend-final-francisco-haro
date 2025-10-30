@@ -242,7 +242,6 @@ const socketAuth = (socket, next) => {
 
   console.log(`[${timestamp}] Nueva conexión desde IP: ${ip}`);
 
-  // Aquí se podría validar tokens, cookies, etc.
   next();
 };
 

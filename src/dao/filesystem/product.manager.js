@@ -29,7 +29,6 @@ const ensureThumbs = (val) => {
 };
 
 // Administrador de productos - maneja la persistencia de productos en JSON
-// Este manager se encarga de todas las operaciones CRUD con productos
 class ProductManager {
   constructor() {
     this.path = path.join(__dirname, "../../data/products.json");
