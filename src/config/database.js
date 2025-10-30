@@ -33,15 +33,15 @@ class DatabaseConfig {
         dbName: process.env.DB_NAME || "proyecto_final", // Nombre específico de la DB
       };
 
-      console.log("🔄 Conectando a MongoDB Atlas...");
+      console.log("Conectando a MongoDB Atlas...");
 
       // Establecer conexión
       this.connection = await mongoose.connect(MONGODB_URI, options);
 
       console.log(
-        `✅ Conectado a MongoDB Atlas: ${this.connection.connection.name}`
+        `Conectado a MongoDB Atlas: ${this.connection.connection.name}`
       );
-      console.log(`🌐 Cluster: ${this.connection.connection.host}`);
+      console.log(`Cluster: ${this.connection.connection.host}`);
       console.log(
         `📊 Estado: ${
           this.connection.connection.readyState === 1 ? "Activo" : "Inactivo"
@@ -85,7 +85,7 @@ class DatabaseConfig {
 
     // Reconexión exitosa
     connection.on("reconnected", () => {
-      console.log("🔄 Mongoose reconectado a MongoDB Atlas");
+      console.log("Mongoose reconectado a MongoDB Atlas");
     });
 
     // Cerrar conexión cuando la aplicación termine

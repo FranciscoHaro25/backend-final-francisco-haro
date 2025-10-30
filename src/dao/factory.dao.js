@@ -27,7 +27,7 @@ class DAOFactory {
         // Usar persistencia en MongoDB
         const ProductDAO = require("../dao/mongodb/product.dao");
         productDAO = new ProductDAO();
-        console.log("🗄️ Usando persistencia MongoDB para productos");
+        console.log("Usando persistencia MongoDB para productos");
         break;
     }
 
@@ -52,7 +52,7 @@ class DAOFactory {
         // Usar persistencia en MongoDB
         const CartDAO = require("../dao/mongodb/cart.dao");
         cartDAO = new CartDAO();
-        console.log("🗄️ Usando persistencia MongoDB para carritos");
+        console.log("Usando persistencia MongoDB para carritos");
         break;
     }
 
@@ -69,13 +69,13 @@ class DAOFactory {
         // Inicializar conexión a MongoDB
         const database = require("../config/database");
         await database.connect();
-        console.log("✅ Persistencia MongoDB inicializada");
+        console.log("Persistencia MongoDB inicializada");
         break;
 
       case "FILESYSTEM":
       case "FILE":
         // Para FileSystem no hay inicialización especial
-        console.log("✅ Persistencia FileSystem inicializada");
+        console.log("Persistencia FileSystem inicializada");
         break;
 
       default:
@@ -103,7 +103,7 @@ class DAOFactory {
   // Método para cambiar el tipo de persistencia (para testing)
   static setPersistenceType(type) {
     process.env.PERSISTENCE = type;
-    console.log(`🔄 Tipo de persistencia cambiado a: ${type}`);
+    console.log(`Tipo de persistencia cambiado a: ${type}`);
   }
 }
 

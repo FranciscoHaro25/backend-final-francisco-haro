@@ -38,7 +38,7 @@ async function startServer() {
 
     const PORT = process.env.PORT || 8080;
     server.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("❌ Error al inicializar el servidor:", error);

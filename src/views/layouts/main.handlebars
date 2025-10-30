@@ -47,28 +47,7 @@
     <!-- Sistema de notificaciones global -->
     <script src="/js/notifications.js"></script>
 
-    <!-- Global Cart Functions -->
-    <script>
-      function irAlCarrito() { const cartId =
-      localStorage.getItem('currentCartId'); if (cartId) { window.location.href
-      = `/carts/${cartId}`; } else { if (window.notifications) {
-      window.notifications.warning('No tienes un carrito activo'); } else {
-      alert('No tienes un carrito activo'); } } } function
-      actualizarIconoCarrito() { const cartId =
-      localStorage.getItem('currentCartId'); const cartIcon =
-      document.getElementById('cartIcon'); const cartBadge =
-      document.getElementById('cartBadge'); if (cartId) {
-      fetch(`/api/carts/${cartId}`) .then(res => res.json()) .then(data => { if
-      (data.error) { localStorage.removeItem('currentCartId');
-      cartIcon.style.display = 'none'; } else { cartIcon.style.display =
-      'block'; if (data.products && data.products.length > 0) { const totalItems
-      = data.products.reduce((total, item) => total + item.quantity, 0);
-      cartBadge.style.display = 'block'; cartBadge.textContent = totalItems; }
-      else { cartBadge.style.display = 'none'; } } }) .catch(() => {
-      cartIcon.style.display = 'none'; }); } else { cartIcon.style.display =
-      'none'; } } document.addEventListener('DOMContentLoaded', function() {
-      actualizarIconoCarrito(); setInterval(actualizarIconoCarrito, 5000); });
-      window.actualizarCarrito = actualizarIconoCarrito;
-    </script>
+    <!-- Funciones del carrito -->
+    <script src="/js/cart-icon.js"></script>
   </body>
 </html>
