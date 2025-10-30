@@ -85,7 +85,11 @@
             | Categoría: {{this.category}}
           </p>
           {{#if (and this.status (gt this.stock 0))}}
-            <span class="badge bg-success">Disponible</span>
+            <span class="badge bg-success mb-2">Disponible</span>
+            <br>
+            <button class="btn btn-primary btn-sm" onclick="addToCartFromHome('{{this.id}}')">
+              🛒 Agregar al carrito
+            </button>
           {{else}}
             <span class="badge bg-secondary">No disponible</span>
           {{/if}}
@@ -146,3 +150,72 @@
   </div>
 </div>
 {{/if}}
+
+<!-- Funciones para agregar al carrito -->
+<script>
+function addToCartFromHome(productId) {
+  let cartId = localStorage.getItem('currentCartId');
+  
+  if (cartId) {
+    agregarAlCarrito(cartId, productId);
+  } else {
+    crearCarritoYAgregar(productId);
+  }
+}
+
+function crearCarritoYAgregar(productId) {
+  fetch('/api/carts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error al crear carrito: ' + data.message);
+    } else {
+      const cartId = data.cart.id || data.cart._id;
+      localStorage.setItem('currentCartId', cartId);
+      agregarAlCarrito(cartId, productId);
+    }
+  })
+  .catch(err => {
+    console.error('Error:', err);
+    alert('Error de conexión');
+  });
+}
+
+function agregarAlCarrito(cartId, productId) {
+  fetch(`/api/carts/${cartId}/product/${productId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quantity: 1 })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.message);
+      if (data.message.includes('no encontrado')) {
+        localStorage.removeItem('currentCartId');
+        crearCarritoYAgregar(productId);
+      }
+    } else {
+      if (confirm('Producto agregado. ¿Ver carrito?')) {
+        window.location.href = `/carts/${cartId}`;
+      }
+    }
+  })
+  .catch(err => {
+    console.error('Error:', err);
+    alert('Error de conexión');
+  });
+}
+
+// Mostrar carrito actual si existe
+document.addEventListener('DOMContentLoaded', function() {
+  const cartId = localStorage.getItem('currentCartId');
+  if (cartId) {
+    console.log('Carrito actual:', cartId);
+  }
+});
+</script>
+</script>
