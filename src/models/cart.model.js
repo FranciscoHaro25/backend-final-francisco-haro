@@ -5,7 +5,7 @@ const cartProductSchema = new mongoose.Schema(
   {
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // Referencia al modelo Product
+      ref: "Product",
       required: [true, "La referencia al producto es obligatoria"],
     },
     quantity: {
@@ -22,7 +22,7 @@ const cartProductSchema = new mongoose.Schema(
     },
   },
   {
-    _id: false, // No generar _id para subdocumentos
+    _id: false,
   }
 );
 
@@ -34,48 +34,42 @@ const cartSchema = new mongoose.Schema(
       default: [],
       validate: {
         validator: function (array) {
-          return array.length <= 100; // Máximo 100 productos diferentes
+          return array.length <= 100;
         },
         message: "El carrito no puede tener más de 100 productos diferentes",
       },
     },
 
-    // Campos adicionales útiles para el carrito
     status: {
       type: String,
       enum: ["active", "completed", "abandoned"],
       default: "active",
     },
 
-    // Información de usuario (opcional para futuras implementaciones)
     userId: {
-      type: String, // Puede ser ObjectId si tienes modelo de usuarios
+      type: String,
       default: null,
     },
 
-    // Fecha de última modificación automática
     lastModified: {
       type: Date,
       default: Date.now,
     },
   },
   {
-    timestamps: true, // Agrega createdAt y updatedAt
-    versionKey: false, // Deshabilita __v
+    timestamps: true,
+    versionKey: false,
   }
 );
 
-// Índices para optimizar consultas
-cartSchema.index({ status: 1, updatedAt: -1 }); // Carritos activos ordenados por fecha
-cartSchema.index({ "products.product": 1 }); // Buscar por producto específico
+cartSchema.index({ status: 1, updatedAt: -1 });
+cartSchema.index({ "products.product": 1 });
 
-// Middleware pre-save para actualizar lastModified
 cartSchema.pre("save", function (next) {
   this.lastModified = new Date();
   next();
 });
 
-// Middleware pre-update
 cartSchema.pre(
   ["updateOne", "findOneAndUpdate", "updateMany"],
   function (next) {
@@ -84,7 +78,6 @@ cartSchema.pre(
   }
 );
 
-// Métodos de instancia (para documentos específicos)
 cartSchema.methods.addProduct = function (productId, quantity = 1) {
   const existingProduct = this.products.find(
     (item) => item.product.toString() === productId.toString()
@@ -132,7 +125,6 @@ cartSchema.methods.getTotalItems = function () {
   return this.products.reduce((total, item) => total + item.quantity, 0);
 };
 
-// Métodos virtuales
 cartSchema.virtual("isEmpty").get(function () {
   return this.products.length === 0;
 });
@@ -141,10 +133,9 @@ cartSchema.virtual("totalItems").get(function () {
   return this.products.reduce((total, item) => total + item.quantity, 0);
 });
 
-// Método virtual para calcular total (requiere populate)
 cartSchema.virtual("totalPrice").get(function () {
   if (!this.populated("products.product")) {
-    return null; // Requiere populate para calcular
+    return null;
   }
 
   return this.products.reduce((total, item) => {
@@ -155,7 +146,6 @@ cartSchema.virtual("totalPrice").get(function () {
   }, 0);
 });
 
-// Métodos estáticos para consultas comunes
 cartSchema.statics.findActive = function () {
   return this.find({ status: "active" });
 };
@@ -165,28 +155,24 @@ cartSchema.statics.findByUser = function (userId) {
 };
 
 cartSchema.statics.findWithProducts = function () {
-  return this.find({ "products.0": { $exists: true } }); // Carritos que tienen al menos un producto
+  return this.find({ "products.0": { $exists: true } });
 };
 
-// Configurar población automática para algunos métodos
 cartSchema.pre(["find", "findOne", "findOneAndUpdate"], function () {
-  // Solo poblar si no está explícitamente deshabilitado
   if (!this.getOptions().skipPopulate) {
     this.populate({
       path: "products.product",
-      select: "title price stock status category thumbnails", // Solo campos necesarios
-      match: { status: true }, // Solo productos activos
+      select: "title price stock status category thumbnails",
+      match: { status: true },
     });
   }
 });
 
-// Configurar opciones de JSON
 cartSchema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {
     ret.id = ret._id;
     delete ret._id;
-    // Si hay productos populados, calcular total
     if (ret.products && ret.products.length > 0) {
       ret.totalPrice = ret.products.reduce((total, item) => {
         if (item.product && item.product.price) {
@@ -208,7 +194,6 @@ cartSchema.set("toObject", {
   },
 });
 
-// Crear y exportar el modelo
 const Cart = mongoose.model("Cart", cartSchema);
 
 module.exports = Cart;

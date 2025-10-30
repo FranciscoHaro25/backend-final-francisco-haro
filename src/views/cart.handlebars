@@ -84,7 +84,7 @@
       </div>
       <div>
         {{#if cart.summary}}
-        <button class="btn btn-success btn-lg">
+        <button class="btn btn-success btn-lg" onclick="procesarCompra('{{cartId}}')">
           Comprar - ${{cart.summary.total}}
         </button>
         {{/if}}
@@ -120,17 +120,36 @@ function editarCantidad(carritoId, productoId, cantidadActual) {
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        alert('Error: ' + data.message);
+        if (window.notifications) {
+          window.notifications.error('Error: ' + data.message);
+        } else {
+          alert('Error: ' + data.message);
+        }
       } else {
-        window.location.reload();
+        if (window.notifications) {
+          window.notifications.success('Cantidad actualizada correctamente');
+        }
+        // Actualizar ícono del carrito
+        if (window.actualizarCarrito) {
+          window.actualizarCarrito();
+        }
+        setTimeout(() => window.location.reload(), 1000);
       }
     })
     .catch(err => {
       console.error('Error:', err);
-      alert('Error al actualizar cantidad');
+      if (window.notifications) {
+        window.notifications.error('Error al actualizar cantidad');
+      } else {
+        alert('Error al actualizar cantidad');
+      }
     });
   } else if (nuevaCantidad !== null) {
-    alert('La cantidad debe ser entre 1 y 999');
+    if (window.notifications) {
+      window.notifications.warning('La cantidad debe ser entre 1 y 999');
+    } else {
+      alert('La cantidad debe ser entre 1 y 999');
+    }
   }
 }
 
@@ -142,14 +161,29 @@ function eliminarProducto(carritoId, productoId) {
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        alert('Error: ' + data.message);
+        if (window.notifications) {
+          window.notifications.error('Error: ' + data.message);
+        } else {
+          alert('Error: ' + data.message);
+        }
       } else {
-        window.location.reload();
+        if (window.notifications) {
+          window.notifications.success('Producto eliminado del carrito');
+        }
+        // Actualizar ícono del carrito
+        if (window.actualizarCarrito) {
+          window.actualizarCarrito();
+        }
+        setTimeout(() => window.location.reload(), 1000);
       }
     })
     .catch(err => {
       console.error('Error:', err);
-      alert('Error al eliminar producto');
+      if (window.notifications) {
+        window.notifications.error('Error al eliminar producto');
+      } else {
+        alert('Error al eliminar producto');
+      }
     });
   }
 }
@@ -162,17 +196,88 @@ function vaciarCarrito(carritoId) {
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        alert('Error: ' + data.message);
+        if (window.notifications) {
+          window.notifications.error('Error: ' + data.message);
+        } else {
+          alert('Error: ' + data.message);
+        }
       } else {
-        window.location.reload();
+        // Limpiar localStorage
+        localStorage.removeItem('currentCartId');
+        if (window.notifications) {
+          window.notifications.success('Carrito vaciado correctamente');
+        }
+        // Actualizar ícono del carrito
+        if (window.actualizarCarrito) {
+          window.actualizarCarrito();
+        }
+        setTimeout(() => window.location.reload(), 1000);
       }
     })
     .catch(err => {
       console.error('Error:', err);
-      alert('Error al vaciar carrito');
+      if (window.notifications) {
+        window.notifications.error('Error al vaciar carrito');
+      } else {
+        alert('Error al vaciar carrito');
+      }
     });
   }
 }
-</script>
-</script>
+
+function procesarCompra(carritoId) {
+  if (confirm('¿Procesar la compra? Se finalizará tu pedido.')) {
+    // Mostrar loading
+    const btnComprar = event.target;
+    const textoOriginal = btnComprar.innerHTML;
+    btnComprar.innerHTML = 'Procesando...';
+    btnComprar.disabled = true;
+    
+    fetch(`/api/carts/${carritoId}/purchase`, {
+      method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        if (window.notifications) {
+          window.notifications.error('Error al procesar compra: ' + data.message);
+        } else {
+          alert('Error al procesar compra: ' + data.message);
+        }
+        btnComprar.innerHTML = textoOriginal;
+        btnComprar.disabled = false;
+      } else {
+        // Limpiar localStorage
+        localStorage.removeItem('currentCartId');
+        
+        // Mostrar mensaje de éxito
+        if (window.notifications) {
+          window.notifications.success(`¡Compra exitosa! Orden: ${data.purchase.orderNumber} - Total: $${data.purchase.total}`);
+        } else {
+          alert(`¡Compra exitosa!\n\nNúmero de orden: ${data.purchase.orderNumber}\nTotal: $${data.purchase.total}\n\n¡Gracias por tu compra!`);
+        }
+        
+        // Actualizar ícono del carrito
+        if (window.actualizarCarrito) {
+          window.actualizarCarrito();
+        }
+        
+        // Redirigir al home después de un momento
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      if (window.notifications) {
+        window.notifications.error('Error al procesar la compra');
+      } else {
+        alert('Error al procesar la compra');
+      }
+      btnComprar.innerHTML = textoOriginal;
+      btnComprar.disabled = false;
+    });
+  }
+}
 </script>

@@ -215,6 +215,113 @@ class CartController {
       });
     }
   }
+
+  // POST /:cid/purchase - Procesar compra del carrito
+  async purchaseCart(req, res) {
+    try {
+      const { cid } = req.params;
+
+      // Obtener el carrito con productos
+      const cart = await cartService.getCartWithProducts(cid);
+
+      if (!cart || cart.products.length === 0) {
+        return res.status(400).json({
+          error: "Carrito vacío",
+          message: "No hay productos en el carrito para procesar la compra",
+        });
+      }
+
+      // Verificar stock disponible antes de procesar
+      const ProductService = require("../services/product.service");
+      const productService = new ProductService();
+
+      const stockErrors = [];
+      for (const item of cart.products) {
+        if (item.product && item.product.stock < item.quantity) {
+          stockErrors.push(
+            `${item.product.title}: stock insuficiente (disponible: ${item.product.stock}, solicitado: ${item.quantity})`
+          );
+        }
+      }
+
+      if (stockErrors.length > 0) {
+        return res.status(400).json({
+          error: "Stock insuficiente",
+          message: "Algunos productos no tienen stock suficiente",
+          details: stockErrors,
+        });
+      }
+
+      // Actualizar stock de productos
+      const productUpdates = [];
+      for (const item of cart.products) {
+        if (item.product) {
+          const newStock = item.product.stock - item.quantity;
+          try {
+            await productService.update(item.product._id, { stock: newStock });
+            productUpdates.push({
+              productId: item.product._id,
+              oldStock: item.product.stock,
+              newStock: newStock,
+              quantityPurchased: item.quantity,
+            });
+          } catch (error) {
+            console.error(
+              `Error actualizando stock del producto ${item.product._id}:`,
+              error
+            );
+            throw new Error(
+              `No se pudo actualizar el stock del producto: ${item.product.title}`
+            );
+          }
+        }
+      }
+
+      // Calcular total de la compra
+      const total = cart.products.reduce((acc, item) => {
+        return acc + item.product.price * item.quantity;
+      }, 0);
+
+      // Crear número de orden único
+      const orderNumber = `ORD-${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+
+      // Crear registro de la compra
+      const purchase = {
+        orderNumber,
+        cartId: cid,
+        products: cart.products.map((item) => ({
+          productId: item.product._id,
+          title: item.product.title,
+          price: item.product.price,
+          quantity: item.quantity,
+          subtotal: item.product.price * item.quantity,
+        })),
+        total,
+        purchaseDate: new Date(),
+        status: "completed",
+        stockUpdates: productUpdates,
+      };
+
+      // Vaciar el carrito después de la compra exitosa
+      await cartService.clearCart(cid);
+
+      res.json({
+        message: "Compra procesada exitosamente",
+        purchase: purchase,
+      });
+    } catch (error) {
+      console.error("Error al procesar compra:", error);
+
+      const status = error.message.includes("no encontrado") ? 404 : 500;
+
+      res.status(status).json({
+        error: "Error al procesar compra",
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new CartController();

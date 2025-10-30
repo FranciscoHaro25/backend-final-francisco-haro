@@ -43,4 +43,7 @@ router.put(
 // DELETE /:cid - Eliminar todos los productos del carrito
 router.delete("/:cid", validateCartId, cartController.clearCart);
 
+// POST /:cid/purchase - Procesar compra del carrito
+router.post("/:cid/purchase", validateCartId, cartController.purchaseCart);
+
 module.exports = router;

@@ -154,12 +154,8 @@ class ProductController {
     try {
       if (io) {
         const result = await productService.list({});
-        // Extraer productos según el formato de respuesta
         const products = result.docs || result;
         io.emit("updateProducts", products);
-        console.log(
-          `[${new Date().toISOString()}] Productos actualizados via WebSocket`
-        );
       }
     } catch (error) {
       console.error("Error al emitir WebSocket:", error);

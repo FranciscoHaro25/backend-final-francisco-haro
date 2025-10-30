@@ -171,7 +171,11 @@ function crearCarritoYAgregar(productId) {
   .then(res => res.json())
   .then(data => {
     if (data.error) {
-      alert('Error al crear carrito: ' + data.message);
+      if (window.notifications) {
+        window.notifications.error('Error al crear carrito: ' + data.message);
+      } else {
+        alert('Error al crear carrito: ' + data.message);
+      }
     } else {
       const cartId = data.cart.id || data.cart._id;
       localStorage.setItem('currentCartId', cartId);
@@ -180,7 +184,11 @@ function crearCarritoYAgregar(productId) {
   })
   .catch(err => {
     console.error('Error:', err);
-    alert('Error de conexión');
+    if (window.notifications) {
+      window.notifications.error('Error de conexión');
+    } else {
+      alert('Error de conexión');
+    }
   });
 }
 
@@ -193,29 +201,38 @@ function agregarAlCarrito(cartId, productId) {
   .then(res => res.json())
   .then(data => {
     if (data.error) {
-      alert('Error: ' + data.message);
+      if (window.notifications) {
+        window.notifications.error('Error: ' + data.message);
+      } else {
+        alert('Error: ' + data.message);
+      }
       if (data.message.includes('no encontrado')) {
         localStorage.removeItem('currentCartId');
         crearCarritoYAgregar(productId);
       }
     } else {
-      if (confirm('Producto agregado. ¿Ver carrito?')) {
-        window.location.href = `/carts/${cartId}`;
+      if (window.notifications) {
+        window.notifications.success('Producto agregado al carrito');
       }
+      // Actualizar ícono del carrito
+      if (window.actualizarCarrito) {
+        window.actualizarCarrito();
+      }
+      // Preguntar si quiere ver el carrito
+      setTimeout(() => {
+        if (confirm('¿Deseas ver tu carrito?')) {
+          window.location.href = `/carts/${cartId}`;
+        }
+      }, 1000);
     }
   })
   .catch(err => {
     console.error('Error:', err);
-    alert('Error de conexión');
+    if (window.notifications) {
+      window.notifications.error('Error de conexión');
+    } else {
+      alert('Error de conexión');
+    }
   });
 }
-
-// Mostrar carrito actual si existe
-document.addEventListener('DOMContentLoaded', function() {
-  const cartId = localStorage.getItem('currentCartId');
-  if (cartId) {
-    console.log('Carrito actual:', cartId);
-  }
-});
-</script>
 </script>

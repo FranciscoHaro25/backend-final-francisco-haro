@@ -32,19 +32,13 @@ configureSocket(io);
 // Función principal para inicializar el servidor
 async function startServer() {
   try {
-    // Inicializar la persistencia (MongoDB o FileSystem)
-    console.log("Inicializando persistencia...");
     await DAOFactory.initializePersistence();
 
     const persistenceInfo = DAOFactory.getPersistenceInfo();
-    console.log(`Persistencia configurada: ${persistenceInfo.description}`);
 
-    // Levantar el servidor en el puerto especificado
     const PORT = process.env.PORT || 8080;
     server.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-      console.log("📡 Socket.IO configurado");
-      console.log("✅ Sistema listo para recibir peticiones");
     });
   } catch (error) {
     console.error("❌ Error al inicializar el servidor:", error);
